@@ -1,0 +1,179 @@
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { StyleSheet, Image, TextInput, Alert, ScrollView, ActivityIndicator, View, Text } from 'react-native';
+import ParallaxScrollView from '@/components/ParallaxScrollView';
+import { ThemedText } from '@/components/ThemedText';
+import { ThemedView } from '@/components/ThemedView';
+import { useState } from 'react';
+
+// Dependencias Firebase
+import db from '../../../database/firebase';
+import { Button, Center, Input } from 'native-base';
+
+const Table = ({ data }: any) => {
+  const tableData = Object.entries(data.volume);
+
+  const renderItem = ({ item }: any) => (
+      <View style={styles.row}>
+          <Text style={styles.cell}>{item[0]}</Text>
+          <Text style={styles.cell}>{Array.isArray(item[1]) ? item[1].join(' ') : item[1]}</Text>
+      </View>
+  );
+
+  return (
+      <View>
+          {tableData.map((item, index) => renderItem({ item, index }))}
+      </View>
+  );
+};
+
+export default function VistaVolumenDeMercado() {
+
+  const [marketId, setMarketId] = useState('');
+  const [apiData, setApiData] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const fetchDataFromApiVolume = async (market_id: string) => {
+    try {
+      const response = await fetch(`https://www.buda.com/api/v2/markets/${market_id}/volume`);
+      if (!response.ok) {
+        throw new Error('No hay respuesta de API');
+      }
+      const data = await response.json();
+      // Mostrar data de consulta a API de BUDA
+      console.log(data)
+      return data;
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Error', 'Error al consultar API');
+    }
+  }
+
+  const saveDataToFirestore = async (data: any) => {
+    try {
+      // Guardar la data a la tabla abonosRetiros de Firebase
+      await db.collection('abonosRetiros').add(data);
+    } catch (error) {
+      // En caso de error guardar en tabla abonosRetirosError
+      await db.collection('abonosRetirosError').add(data);
+      console.error('Error al guardar en Firestore: ', error);
+      Alert.alert('Error', 'Error al guardar en Firestore');
+    }
+  };
+
+  const handleApiAndFirestore = async () => {
+    setLoading(true);
+    const data = await fetchDataFromApiVolume(marketId);
+    if (data) {
+      setApiData(data);
+      await saveDataToFirestore(data);
+    }
+    setLoading(false);
+  };
+
+    return (
+      <ParallaxScrollView
+        headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
+        headerImage={<Ionicons size={310} name="code-slash" style={styles.headerImage} />}>
+        <ThemedView style={styles.titleContainer}>
+            <ThemedText type="title">Volumen De Mercado</ThemedText>
+        </ThemedView>
+        <ThemedText>Consultar volumen transado en un determinado mercado</ThemedText>
+        <ThemedView>
+          <Input 
+            size="lg" 
+            variant="outline" 
+            placeholder="Ingrese consulta" 
+            mt={3}
+            value={marketId}
+            onChangeText={setMarketId}
+          />
+        </ThemedView>
+        <ThemedView>
+          <Center>
+              <Button 
+                size="lg" 
+                variant="solid" 
+                w="80%" 
+                borderRadius={40}
+                onPress={handleApiAndFirestore}>
+                    Deposito
+              </Button>
+          </Center>
+        </ThemedView>
+        <ScrollView>
+          {loading && <ActivityIndicator size="large" color="#0000ff" />}
+          {apiData && (
+              <View style={styles.jsonContainer}>
+                  <Table data={apiData} />
+              </View>
+          )}
+        </ScrollView>
+      </ParallaxScrollView>
+    );
+}
+
+const styles = StyleSheet.create({
+  headerImage: {
+    color: '#808080',
+    bottom: -90,
+    left: -35,
+    position: 'absolute',
+  },
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop: 50,
+    backgroundColor: 'white',
+  },
+  cell: {
+      flex: 1,
+      paddingHorizontal: 8,
+  },
+  row: {
+      flexDirection: 'row',
+      borderBottomWidth: 1,
+      borderBottomColor: '#ddd',
+      paddingVertical: 8,
+  },
+  titleContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+  },
+  stepContainer: {
+      gap: 8,
+      marginBottom: 8,
+  },
+  reactLogo: {
+      height: 178,
+      width: 290,
+      bottom: 0,
+      left: 0,
+      position: 'absolute',
+  },
+  button: {
+      flex: 1,
+      justifyContent: 'center',
+      marginHorizontal: 16,
+      backgroundColor: 'blue',
+      borderRadius: 10,
+  },
+  input: {
+      height: 40,
+      borderColor: 'gray',
+      borderWidth: 1,
+      marginBottom: 16,
+      paddingHorizontal: 8,
+  },
+  jsonContainer: {
+      margin: 16,
+      padding: 16,
+      borderRadius: 8,
+      backgroundColor: '#f5f5f5',
+  },
+  jsonText: {
+      fontFamily: 'monospace',
+  },
+  
+});
