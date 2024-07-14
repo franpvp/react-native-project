@@ -13,5 +13,5 @@
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
-, "app/(tabs)/index.tsx", "components/MenuDrawer.js", "components/Button.js", "components/BuscadorMarketIdHome.js", "components/CustomComponent.js"  ]
+, "app/index.tsx", "components/MenuDrawer.js", "components/Button.js", "components/BuscadorMarketIdHome.js", "components/CustomComponent.js"  ]
 }
