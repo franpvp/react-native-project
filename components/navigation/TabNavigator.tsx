@@ -7,12 +7,15 @@ import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from 'react-native';
 
+import VistaVolumenDeMercado from '@/app/views/VistasBudaApi/VistaVolumenMercado';
+
 const Tab = createBottomTabNavigator();
 
-const TabNavigator = () => {
+export const TabNavigator = () => {
   const colorScheme = useColorScheme();
   return (
     <Tab.Navigator
+    initialRouteName='Home'
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
@@ -29,7 +32,7 @@ const TabNavigator = () => {
       }}
     >
       <Tab.Screen 
-        name="VistaHome"
+        name="Home"
         component={VistaHome}
         options={{
           tabBarShowLabel: false,
@@ -39,8 +42,18 @@ const TabNavigator = () => {
         }}
       />
       <Tab.Screen 
-        name="Abonos y Retiros"
+        name="Abono y Retiro"
         component={VistaAbonoRetiro}
+        options={{
+          tabBarShowLabel: false,
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'settings' : 'settings'} color={color} />
+          ),
+        }}
+      />
+      <Tab.Screen 
+        name="Volumen Mercado"
+        component={VistaVolumenDeMercado}
         options={{
           tabBarShowLabel: false,
           tabBarIcon: ({ color, focused }) => (
@@ -52,4 +65,8 @@ const TabNavigator = () => {
   );
 };
 
-export default TabNavigator;
+export default function App(){
+  return (
+      <TabNavigator />
+  );
+}

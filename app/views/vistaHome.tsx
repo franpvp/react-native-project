@@ -1,33 +1,44 @@
 import React, { useState } from "react";
-import { VStack, Center, Pressable } from "native-base";
-import {View, Image, StyleSheet} from 'react-native';
+import { VStack, Center } from "native-base";
+import {View, Image, StyleSheet, Button, Pressable} from 'react-native';
 import { ScrollView } from "react-native";
-import { useNavigation } from '@react-navigation/native';
 
 
-const VistaHome = () => {
-  const [hover, setHover] = useState(false);
-  const navigation = useNavigation();
+export default function VistaHome({ navigation }: any) {
 
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
       <VStack alignItems="center" paddingBottom={10}>
-        <Center mt={5} w="90%" h="40" bg="indigo.300" rounded="md" shadow={3}>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', marginTop: 20 }}>
           <Pressable
-            onPressIn={() => setHover(true)}
-            onPressOut={() => setHover(false)}
+          // Redirigir al Home
+            onPress={() => navigation.navigate("Buda API")}
+            style={{
+              width: 300,
+              height: 250,
+              borderWidth: 1, // Añadir borde
+              borderColor: '#D9D9D9', // Color del borde
+              borderRadius: 10, // Borde redondeado
+              overflow: 'hidden', // Para asegurar que el borde se muestre correctamente
+            }}
           >
+            <Image
+              source={require('../../assets/images/budaLogo.jpg')}
+              style={{ width: '100%', height: '100%', borderRadius: 10 }}
+            />
           </Pressable>
-          <Image
-            source={require('../../assets/images/budaLogo.jpg')}
-            style={{ width: '100%', height: '100%', borderRadius: hover ? 20 : 10 }}
-          />
-        </Center>
-        <Center mt={5} w="90%" h="40" bg="indigo.300" rounded="md" shadow={3}>
-          <Image 
-            source={require('../../assets/images/indicadoresEco.png')}
-            style={{ width: '100%', height: '100%', borderRadius: hover ? 20 : 10 }} />
-        </Center>
+        </View>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', marginTop: 20 }}>
+          <Pressable 
+            onPress={() => navigation.navigate("Abonos y Retiros")}
+            style={{ width: 300, height: 220 }}
+          >
+            <Image 
+              source={require('../../assets/images/indicadoresEco.png')}
+              style={{ width: '100%', height: '100%', borderRadius: 10 }}
+            />
+          </Pressable>
+        </View>
       </VStack>
     </ScrollView>
   );
@@ -37,12 +48,4 @@ const styles = StyleSheet.create({
   container: {
     paddingTop: 50,
   },
-  stretch: {
-    width: 50,
-    height: 200,
-    resizeMode: 'stretch',
-  },
 });
-
-
-export default VistaHome;

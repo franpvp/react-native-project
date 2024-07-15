@@ -26,7 +26,7 @@ const Table = ({ data }: any) => {
   );
 };
 
-export default function VistaVolumenDeMercado() {
+export default function VistaVolumenMercado() {
 
   const [marketId, setMarketId] = useState('');
   const [apiData, setApiData] = useState(null);

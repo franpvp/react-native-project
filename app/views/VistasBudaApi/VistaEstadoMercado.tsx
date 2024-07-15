@@ -1,22 +1,43 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, Image, Alert, ScrollView, ActivityIndicator, View } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { Button, Center, Input } from "native-base";
+import { Center, Input, Button, IconButton, Icon, ChevronLeftIcon } from "native-base";
+
+
 
 import db from '../../../database/firebase';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import TableModal from '@/components/ModalComponent';
+import { useNavigation } from '@react-navigation/native';
 
-export default function EstadoMercado() {
+const VistaEstadoMercado = () => {
+
+    const navigation = useNavigation();
+
     const [marketId, setMarketId] = useState('');
     const [apiData, setApiData] = useState<any>(null);
     const [loading, setLoading] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
 
+    useEffect(() => {
+        // Personaliza las opciones de navegación aquí
+        navigation.setOptions({
+          headerLeft: () => (
+            <IconButton
+              icon={<ChevronLeftIcon name="chevron-left" size={5} color="blue"/>} // Icono de ChevronLeftIcon
+              colorScheme="dark" // Ajusta el esquema de color según tu tema
+              onPress={() => navigation.goBack()} // Acción al presionar el botón
+            />
+          ),
+        });
+      }, []);
+
     const fetchDataApiBuda = async (marketId: string) => {
+
         try {
-            const response = await fetch(`https://www.buda.com/api/v2/markets/${marketId}/ticker`);
+            // Consulta a servicio Java Springboot
+            const response = await fetch(`http://localhost:8080/api/consultar-mercado/${marketId}`);
             if (!response.ok) {
                 throw new Error('No hay respuesta de API');
             }
@@ -38,7 +59,7 @@ export default function EstadoMercado() {
             Alert.alert('Error', 'Failed to save data to Firestore');
         }
     };
-
+    
     const handleApiAndFirestore = async () => {
     setLoading(true);
     const data = await fetchDataApiBuda(marketId);
@@ -75,11 +96,11 @@ export default function EstadoMercado() {
             <ThemedView>
             <Center>
                 <Button 
-                size="lg" 
-                variant="solid" 
-                w="80%" 
-                borderRadius={40}
-                onPress={handleApiAndFirestore}>
+                    size="lg" 
+                    variant="solid" 
+                    w="80%" 
+                    borderRadius={40}
+                    onPress={handleApiAndFirestore}>
                     Buscar
                 </Button>
             </Center>
@@ -90,6 +111,7 @@ export default function EstadoMercado() {
                     <TableModal isOpen={modalVisible} onClose={() => setModalVisible(false)} data={apiData} />
                 )}
             </ScrollView>
+
         </ParallaxScrollView>
     );
 }
@@ -152,3 +174,5 @@ const styles = StyleSheet.create({
     fontFamily: 'monospace',
     },
 });
+
+export default VistaEstadoMercado;
