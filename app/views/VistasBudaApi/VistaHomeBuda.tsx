@@ -14,7 +14,7 @@ export default function VistaHomeBuda({ navigation }: any) {
                     onPress={() => navigation.navigate("Estado Mercado")}
                     style={{
                         width: 300,
-                        height: 250,
+                        height: 200,
                         borderWidth: 1, // Añadir borde
                         borderColor: '#D9D9D9', // Color del borde
                         borderRadius: 10, // Borde redondeado
@@ -31,11 +31,25 @@ export default function VistaHomeBuda({ navigation }: any) {
                 <Pressable 
                     // Redirigir a vista Abonos y Retiros
                     onPress={() => navigation.navigate("Abonos y Retiros")}
-                    style={{ width: 300, height: 220 }}
+                    style={{
+                        width: 300,
+                        height: 200,
+                        borderWidth: 1, // Añadir borde
+                        borderColor: '#D9D9D9', // Color del borde
+                        borderRadius: 10, // Borde redondeado
+                        overflow: 'hidden', // Para asegurar que el borde se muestre correctamente
+                    }}
                 >
                     <Image 
-                    source={require('../../../assets/images/AbonosRetiros.webp')}
-                    style={{ width: '100%', height: '100%', borderRadius: 10 }}
+                        source={require('../../../assets/images/AbonosRetiros.webp')}
+                        style={{
+                            width: 300,
+                            height: 200,
+                            borderWidth: 2, // Añadir borde
+                            borderColor: '#D9D9D9', // Color del borde
+                            borderRadius: 10, // Borde redondeado
+                            overflow: 'hidden', // Para asegurar que el borde se muestre correctamente
+                        }}
                     />
                 </Pressable>
             </View>

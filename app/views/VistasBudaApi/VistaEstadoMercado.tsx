@@ -4,8 +4,6 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { Center, Input, Button, IconButton, Icon, ChevronLeftIcon } from "native-base";
 
-
-
 import db from '../../../database/firebase';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import TableModal from '@/components/ModalComponent';

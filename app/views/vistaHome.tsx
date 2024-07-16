@@ -3,7 +3,6 @@ import { VStack, Center } from "native-base";
 import {View, Image, StyleSheet, Button, Pressable} from 'react-native';
 import { ScrollView } from "react-native";
 
-
 export default function VistaHome({ navigation }: any) {
 
   return (
@@ -12,7 +11,7 @@ export default function VistaHome({ navigation }: any) {
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', marginTop: 20 }}>
           <Pressable
           // Redirigir al Home
-            onPress={() => navigation.navigate("Buda API")}
+            onPress={() => navigation.navigate("HomeBuda")}
             style={{
               width: 300,
               height: 250,
@@ -30,6 +29,7 @@ export default function VistaHome({ navigation }: any) {
         </View>
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', marginTop: 20 }}>
           <Pressable 
+            // Redirigir a vista Abonos y Retiros
             onPress={() => navigation.navigate("Abonos y Retiros")}
             style={{ width: 300, height: 220 }}
           >
