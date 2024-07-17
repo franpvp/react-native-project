@@ -14,30 +14,46 @@ export default function Perfil() {
   const [telefono, setTelefono] = useState('');
   const [image, setImage] = useState(null);
 
-  const uploadImage = async () => {
-    try {
-      const { status } = await Camera.requestCameraPermissionsAsync();
-      if (status !== 'granted') {
-        alert('Se requieren permisos para acceder a la cámara.');
-        return;
-      }
+  // const uploadImage = async () => {
+  //   try {
+  //     const { status } = await Camera.requestCameraPermissionsAsync();
+  //     if (status !== 'granted') {
+  //       alert('Se requieren permisos para acceder a la cámara.');
+  //       return;
+  //     }
 
-      let result = await ImagePicker.launchCameraAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
-        aspect: [1, 1],
-        quality: 1
-      });
+  //     let result = await ImagePicker.launchImageLibraryAsync({
+  //       mediaTypes: ImagePicker.MediaTypeOptions.Images,
+  //       allowsEditing: true,
+  //       aspect: [1, 1],
+  //       quality: 1
+  //     });
 
-      if (!result.cancelled) {
-        await saveImage(result.uri);
-      }
+  //     if (!result.cancelled) {
+  //       await saveImage(result.uri);
+  //     }
 
-    } catch (error) {
-      alert("Error subiendo imagen: " + error);
-      console.error("Error subiendo imagen: ", error);
+  //   } catch (error) {
+  //     alert("Error subiendo imagen: " + error);
+  //     console.error("Error subiendo imagen: ", error);
+  //   }
+  // }
+
+  const pickImage = async () => {
+    // No permissions request is necessary for launching the image library
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    console.log(result);
+
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
     }
-  }
+  };
 
   const saveImage = async (image) => {
     try {
@@ -69,6 +85,7 @@ export default function Perfil() {
     });
   };
 
+  // Funcion para guardar data en firestore
   const saveUserDataToFirestore = async () => {
     try {
       // Guardar en firestore una lista (agregar user_id)
@@ -91,20 +108,18 @@ export default function Perfil() {
           padding={8}
           alignSelf="center"
           w='100%'
-          height='120px'
+          height='140px'
         >
           <Avatar
-            bg="purple.600"
+            bg="gray.200"
             alignSelf="center"
             size="200px"
             borderWidth={5}
             borderColor='#cbd5e1'
-            source={{
-              uri: image ? image : "https://images.unsplash.com/photo-1510771463146-e89e6e86560e?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=627&q=80"
-            }}
+            source={{ uri: image }}
           />
           <Center>
-            <TouchableOpacity onPress={uploadImage}>
+            <TouchableOpacity onPress={pickImage}>
               <Text color='blue.700'>Subir foto</Text>
             </TouchableOpacity>
           </Center>
@@ -113,7 +128,7 @@ export default function Perfil() {
           </Center>
           {/* Input Nombre Completo */}
             <View style={styles.inputContainer}>
-              <Text style={styles.label}>Nombre Completo</Text>
+              <Text style={styles.label} mt={5}>Nombre Completo</Text>
               <CustomInput
                 value={nombreCompleto}
                 onChangeText={setNombreCompleto}
