@@ -65,6 +65,7 @@ export default function VistaHomeBuda({ navigation }: any) {
                     />
                 </Pressable>
             </View>
+            
         </VStack>
     </ScrollView>
 );

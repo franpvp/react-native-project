@@ -9,7 +9,7 @@ import VistaAbonoRetiro from '@/app/views/VistasBudaApi/VistaAbonoRetiro';
 import VistaVolumenDeMercado from '@/app/views/VistasBudaApi/VistaVolumenMercado';
 import VistaHomeBuda from '@/app/views/VistasBudaApi/VistaHomeBuda';
 import VistaEstadoMercado from '@/app/views/VistasBudaApi/VistaEstadoMercado';
-import VistaSideMenu from '@/app/views/VistaSideMenu/VistaSideMenu';
+import VistaSideMenu from '@/app/views/VistaPerfil/Perfil';
 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';

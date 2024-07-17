@@ -7,7 +7,7 @@ export default function VistaHome({ navigation }: any) {
 
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
-      <VStack alignItems="center" paddingBottom={10}>
+      <VStack alignItems="center" paddingBottom={20}>
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', marginTop: 20 }}>
           <Pressable
           // Redirigir al Home
