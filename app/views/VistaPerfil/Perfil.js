@@ -1,46 +1,39 @@
 import React, { useState } from "react";
-import { VStack, Center, Avatar, Text, Box } from "native-base";
-import { View, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView, Alert } from 'react-native';
+import { Center, Avatar, Text, Box, Button } from "native-base";
+import { View, StyleSheet, TouchableOpacity, ScrollView, Alert, Platform } from 'react-native';
 import CustomInput from '@/components/CustomInput';
 import * as ImagePicker from 'expo-image-picker';
-import { Camera } from 'expo-camera';
 
-import db from '../../../database/firebase';
+import { db, storage } from '../../../database/firebase';
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 
 export default function Perfil() {
-  // Estados para manejar los inputs
   const [nombreCompleto, setNombreCompleto] = useState('');
   const [email, setEmail] = useState('');
   const [telefono, setTelefono] = useState('');
+
   const [image, setImage] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [transferred, setTransferred] = useState(0);
 
-  // const uploadImage = async () => {
-  //   try {
-  //     const { status } = await Camera.requestCameraPermissionsAsync();
-  //     if (status !== 'granted') {
-  //       alert('Se requieren permisos para acceder a la cámara.');
-  //       return;
-  //     }
+  const submitData = () => {
+    const storageRef = ref(storage, 'some-child');
 
-  //     let result = await ImagePicker.launchImageLibraryAsync({
-  //       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-  //       allowsEditing: true,
-  //       aspect: [1, 1],
-  //       quality: 1
-  //     });
+    uploadBytes(storageRef, image)
+    .then((snapshot) => {
+      console.log('Uploaded a blob or file!');
+    }).catch((error) => {
+      console.log(error.message)
+    });
+  }
 
-  //     if (!result.cancelled) {
-  //       await saveImage(result.uri);
-  //     }
-
-  //   } catch (error) {
-  //     alert("Error subiendo imagen: " + error);
-  //     console.error("Error subiendo imagen: ", error);
-  //   }
-  // }
+  const handleChange = (e) => {
+    if (e.target.files[0]){
+      setImage(e.target.files[0]);
+    }
+  }
 
   const pickImage = async () => {
-    // No permissions request is necessary for launching the image library
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
@@ -48,122 +41,103 @@ export default function Perfil() {
       quality: 1,
     });
 
-    console.log(result);
-
     if (!result.canceled) {
       setImage(result.assets[0].uri);
+      await saveImage(result.assets[0].uri);
     }
   };
 
-  const saveImage = async (image) => {
+  const saveImage = async (imageUri) => {
     try {
-      setImage(image);
-
-      // Subir la imagen a Firebase Storage y obtener la URL
-      const imageUrl = await uploadImageToFirebase(image);
-      // Guardar la URL de la imagen en Firestore
-      await saveImageUrlToFirestore(imageUrl);
-
+      setImage(imageUri);
+      uploadImageToFirebase(imageUri);
     } catch (error) {
       console.error("Error guardando imagen: ", error);
+      Alert.alert("Error", "Error guardando imagen: " + error.message);
     }
-  }
-
-  const uploadImageToFirebase = async (uri) => {
-    const response = await fetch(uri);
-    const blob = await response.blob();
-    const ref = db.storage().ref().child(new Date().toISOString());
-    await ref.put(blob);
-    const url = await ref.getDownloadURL();
-    return url;
-  }
-
-  const saveImageUrlToFirestore = async (url) => {
-    await db.collection('userImagesTable').add({
-      profilePicture: url,
-      timestamp: db.FieldValue.serverTimestamp()
-    });
   };
 
-  // Funcion para guardar data en firestore
+  const uploadImageToFirebase = async (uri) => {
+    if (!uri) {
+      throw new Error("La URI de la imagen es nula");
+    }
+
+    const filename = uri.substring(uri.lastIndexOf('/') + 1);
+    const response = await fetch(uri);
+    const blob = await response.blob();
+
+    const storageRef = ref(storage, filename);
+    const uploadTask = uploadBytesResumable(storageRef, blob);
+
+    uploadTask.on('state_changed', snapshot => {
+      const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+      setTransferred(Math.round(progress));
+    });
+
+    try {
+      await uploadTask;
+      const url = await getDownloadURL(storageRef);
+      return url;
+    } catch (e) {
+      console.error(e);
+      throw e;
+    }
+  };
+
   const saveUserDataToFirestore = async () => {
     try {
-      // Guardar en firestore una lista (agregar user_id)
       const userDataArray = [nombreCompleto, email];
-
-      await db.collection('listasDatosUsuarios').add({
-        datosLista: userDataArray
-      });
-      
-      alert('Datos guardados exitosamente');
+      await db.collection('listasDatosUsuarios').add({ datosLista: userDataArray });
+      Alert.alert('Datos guardados exitosamente');
     } catch (error) {
-      alert('Error guardando los datos: ' + error);
+      Alert.alert('Error guardando los datos: ' + error);
     }
   };
 
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
-        <Box
-          bg="primary.700"
-          padding={8}
+      <Box bg="primary.700" padding={8} alignSelf="center" w='100%' height='140px'>
+        <Avatar
+          bg="gray.200"
           alignSelf="center"
-          w='100%'
-          height='140px'
-        >
-          <Avatar
-            bg="gray.200"
-            alignSelf="center"
-            size="200px"
-            borderWidth={5}
-            borderColor='#cbd5e1'
-            source={{ uri: image }}
+          size="200px"
+          borderWidth={5}
+          borderColor='#cbd5e1'
+          source={{ uri: image }}
+        />
+        <Center>
+          <TouchableOpacity onPress={pickImage}>
+            <Text color='blue.700'>Subir foto</Text>
+          </TouchableOpacity>
+          <Button color='blue.700' onPress={submitData}>Guardar Foto</Button>
+        </Center>
+        <Center>
+          <Text style={styles.textoPerfil}>Francisca Valdivia</Text>
+        </Center>
+        <View style={styles.inputContainer}>
+          <Text style={styles.label} mt={5}>Nombre Completo</Text>
+          <CustomInput
+            value={nombreCompleto}
+            onChangeText={setNombreCompleto}
+            placeholder="Ingrese su nombre completo"
+            style={styles.customInput}
           />
-          <Center>
-            <TouchableOpacity onPress={pickImage}>
-              <Text color='blue.700'>Subir foto</Text>
-            </TouchableOpacity>
-          </Center>
-          <Center>
-            <Text style={styles.textoPerfil}>Francisca Valdivia</Text>
-          </Center>
-          {/* Input Nombre Completo */}
-            <View style={styles.inputContainer}>
-              <Text style={styles.label} mt={5}>Nombre Completo</Text>
-              <CustomInput
-                value={nombreCompleto}
-                onChangeText={setNombreCompleto}
-                placeholder="Ingrese su nombre completo"
-                style={styles.customInput}
-              />
-            </View>
-          {/* Input Email */}
-            <View style={styles.inputContainer}>
-              <Text style={styles.label}>Email</Text>
-              <CustomInput
-                value={email}
-                onChangeText={setEmail}
-                placeholder="Ingrese email"
-                style={styles.customInput}
-              />
-            </View>
-          {/* Input Telefono */}
-            {/* <View style={styles.inputContainer}>
-              <Text style={styles.label}>Telefono</Text>
-              <CustomInput
-                value={telefono}
-                onChangeText={setTelefono}
-                placeholder="Ingrese telefono"
-                style={styles.customInput}
-              />
-            </View> */}
-
-          {/* Botón para guardar datos en firestore*/}
-          <Center>
-            <TouchableOpacity onPress={saveUserDataToFirestore} style={styles.saveButton}>
-              <Text style={styles.saveButtonText}>Guardar Datos</Text>
-            </TouchableOpacity>
-          </Center>
-        </Box>
+        </View>
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Email</Text>
+          <CustomInput
+            value={email}
+            onChangeText={setEmail}
+            placeholder="Ingrese email"
+            style={styles.customInput}
+          />
+        </View>
+        <Center>
+          <TouchableOpacity onPress={saveUserDataToFirestore} style={styles.saveButton}>
+            <Text style={styles.saveButtonText}>Guardar Datos</Text>
+          </TouchableOpacity>
+        </Center>
+      </Box>
     </ScrollView>
   );
 }
@@ -204,6 +178,9 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
-    backgroundColor: '#fff', // Asegura que el fondo del scroll sea blanco
+    backgroundColor: '#fff',
+  },
+  progressBarContainer: {
+    marginTop: 20,
   },
 });

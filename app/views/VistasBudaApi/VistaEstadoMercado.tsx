@@ -51,9 +51,9 @@ const VistaEstadoMercado = () => {
 
     const saveDataToFirestore = async (data: any) => {
         try {
-            await db.collection('marketData').add(data);
+            await db.db.collection('marketData').add(data);
         } catch (error) {
-            await db.collection('marketIdError').add(data);
+            await db.db.collection('marketIdError').add(data);
             console.error('Error saving data to Firestore: ', error);
             Alert.alert('Error', 'Failed to save data to Firestore');
         }

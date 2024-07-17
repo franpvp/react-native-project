@@ -6,7 +6,7 @@ import { ScrollView } from "react-native";
 export default function VistaHomeBuda({ navigation }: any) {
 
     return (
-    <ScrollView showsVerticalScrollIndicator={false}>
+    <ScrollView>
         <VStack alignItems="center" paddingBottom={10}>
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', marginTop: 20 }}>
                 <Pressable
@@ -72,7 +72,7 @@ export default function VistaHomeBuda({ navigation }: any) {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    paddingTop: 50,
-  },
+    container: {
+        paddingTop: 50,
+    },
 });
