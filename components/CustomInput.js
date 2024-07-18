@@ -11,6 +11,7 @@ const CustomInput = ({ value, onChangeText, placeholder, style }) => {
             value={value}
             onChangeText={onChangeText}
             placeholder={placeholder}
+            autoCapitalize='none'
             style={[styles.input, { borderColor: colors.primary }]}
             placeholderTextColor={colors.placeholder}
         />

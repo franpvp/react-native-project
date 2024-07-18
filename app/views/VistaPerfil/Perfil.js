@@ -138,7 +138,7 @@ export default function Perfil() {
   };
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false}>
+    <ScrollView style={{ backgroundColor: 'blue.700' }} showsVerticalScrollIndicator={false}>
       <Box bg="primary.700" padding={8} alignSelf="center" w='100%' height='140px'>
         <Avatar
           bg="gray.200"
@@ -152,18 +152,16 @@ export default function Perfil() {
           <TouchableOpacity onPress={pickImage}>
             <Text color='blue.700'>Subir foto</Text>
           </TouchableOpacity>
-          <View style={styles.background}>
-          <Text style={styles.file}>Upload CSV File</Text>
           <View style={styles.button}>
             <TouchableOpacity>
               <Button
-                title="upload your file"
-                color="black"
+                title="Subir archivo"
+                w={100}
+                height={5}
                 onPress={pickDocument}
               />
             </TouchableOpacity>
           </View>
-        </View>
         </Center>
         <Center>
           <Text style={styles.textoPerfil}>Francisca Valdivia</Text>

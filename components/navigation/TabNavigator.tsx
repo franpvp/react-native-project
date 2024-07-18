@@ -9,13 +9,14 @@ import VistaAbonoRetiro from '@/app/views/VistasBudaApi/VistaAbonoRetiro';
 import VistaVolumenDeMercado from '@/app/views/VistasBudaApi/VistaVolumenMercado';
 import VistaHomeBuda from '@/app/views/VistasBudaApi/VistaHomeBuda';
 import VistaEstadoMercado from '@/app/views/VistasBudaApi/VistaEstadoMercado';
-import VistaSideMenu from '@/app/views/VistaPerfil/Perfil';
+import VistaPerfil from '@/app/views/VistaPerfil/Perfil';
+import Login from '@/app/views/VistasAuth/Login';
+import Registro from '@/app/views/VistasAuth/Registro';
 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { HeaderBackButton } from '@react-navigation/elements';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-
 
 const HomeStack = createStackNavigator();
 const HomeBudaStack = createStackNavigator();
@@ -64,20 +65,20 @@ const MenuStackScreen = () => (
     })}
   >
     <MenuStack.Screen 
-      name="SideMenu" 
-      component={VistaSideMenu}
+      name="Perfil" 
+      component={VistaPerfil}
       options={{
-        title: 'Menu'
+        title: 'Mi Perfil'
       }}
     />
   </MenuStack.Navigator>
 );
 
-export const TabNavigator = () => {
+const TabNavigator = () => {
   const colorScheme = useColorScheme();
   return (
     <Tab.Navigator
-      initialRouteName="Home"
+      initialRouteName="Login"
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
@@ -110,7 +111,7 @@ export const TabNavigator = () => {
         }} 
       />
       <Tab.Screen 
-        name="SideMenu" 
+        name="Perfil" 
         component={MenuStackScreen} 
         options={{
           tabBarShowLabel: false,

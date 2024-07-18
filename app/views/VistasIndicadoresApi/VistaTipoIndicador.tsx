@@ -8,8 +8,9 @@ import { useState } from 'react';
 import { Button, Center, Input } from "native-base";
 
 // Dependencia Firestore
-import db from '../../../database/firebase';
+// import db from '../../../database/firebase';
 import TableModal from '@/components/ModalComponent';
+import { db } from '@/database/firebase';
 
 const Table = ({ data }: any) => {
     const tableData = Object.entries(data.fee);
