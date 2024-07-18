@@ -3,6 +3,7 @@ import { Center, Avatar, Text, Box, Button } from "native-base";
 import { View, StyleSheet, TouchableOpacity, ScrollView, Alert, Platform } from 'react-native';
 import CustomInput from '@/components/CustomInput';
 import * as ImagePicker from 'expo-image-picker';
+import * as DocumentPicker from 'expo-document-picker';
 
 import { db, storage } from '../../../database/firebase';
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
@@ -16,22 +17,64 @@ export default function Perfil() {
   const [uploading, setUploading] = useState(false);
   const [transferred, setTransferred] = useState(0);
 
-  const submitData = () => {
-    const storageRef = ref(storage, 'some-child');
+  const [pdfUri, setPdfUri] = useState(null);
 
-    uploadBytes(storageRef, image)
-    .then((snapshot) => {
-      console.log('Uploaded a blob or file!');
-    }).catch((error) => {
-      console.log(error.message)
-    });
-  }
+  const pickDocument = async () => {
+        try {
+            let result = await DocumentPicker.getDocumentAsync({ type: 'application/pdf' });
+            const uri = result.assets[0].uri;
+            const name = result.assets[0].name
 
-  const handleChange = (e) => {
-    if (e.target.files[0]){
-      setImage(e.target.files[0]);
-    }
-  }
+            console.log("name ", result.assets[0].name);
+            console.log("uri ", result.assets[0].uri);
+
+            if (!result.canceled) {
+                uploadPDF(uri, name);
+            } else {
+                Alert.alert('Error', 'No se seleccionó ningún archivo');
+            }
+        } catch (err) {
+            console.error(err);
+            Alert.alert('Error', 'Error al seleccionar el documento: ' + err.message);
+        }
+    };
+
+    const uploadPDF = async (uri, name) => {
+      try {
+          // Convertir el URI a un blob
+          const response = await fetch(uri);
+          const blob = await response.blob();
+
+          // Crear una referencia en Firebase Storage
+          const pdfRef = ref(storage, `pdfs/${name}`);
+
+          // Subir el blob a Firebase Storage
+          const uploadTask = uploadBytesResumable(pdfRef, blob);
+
+          // Monitorizar el progreso de la subida
+          uploadTask.on('state_changed',
+              (snapshot) => {
+                  const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                  console.log('Upload is ' + progress + '% done');
+              },
+              (error) => {
+                  console.error('Error subiendo PDF: ', error);
+                  Alert.alert('Error', 'Error subiendo PDF: ' + error.message);
+              },
+              async () => {
+                  // Obtener la URL de descarga del PDF subido
+                  const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+                  setPdfUri(downloadURL);
+                  Alert.alert('Éxito', 'PDF subido exitosamente');
+              }
+          );
+
+      } catch (error) {
+          console.error('Error subiendo PDF: ', error);
+          Alert.alert('Error', 'Error subiendo PDF: ' + error.message);
+      }
+  };
+
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -109,7 +152,18 @@ export default function Perfil() {
           <TouchableOpacity onPress={pickImage}>
             <Text color='blue.700'>Subir foto</Text>
           </TouchableOpacity>
-          <Button color='blue.700' onPress={submitData}>Guardar Foto</Button>
+          <View style={styles.background}>
+          <Text style={styles.file}>Upload CSV File</Text>
+          <View style={styles.button}>
+            <TouchableOpacity>
+              <Button
+                title="upload your file"
+                color="black"
+                onPress={pickDocument}
+              />
+            </TouchableOpacity>
+          </View>
+        </View>
         </Center>
         <Center>
           <Text style={styles.textoPerfil}>Francisca Valdivia</Text>
