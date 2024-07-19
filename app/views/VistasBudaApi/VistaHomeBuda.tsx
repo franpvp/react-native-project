@@ -4,7 +4,6 @@ import {View, Image, StyleSheet, Button, Pressable} from 'react-native';
 import { ScrollView } from "react-native";
 
 export default function VistaHomeBuda({ navigation }: any) {
-
     return (
     <ScrollView>
         <VStack alignItems="center" paddingBottom={10}>
@@ -12,18 +11,11 @@ export default function VistaHomeBuda({ navigation }: any) {
                 <Pressable
                     // Redirigir a vista Estado Mercado
                     onPress={() => navigation.navigate("Estado Mercado")}
-                    style={{
-                        width: 300,
-                        height: 200,
-                        borderWidth: 1, // Añadir borde
-                        borderColor: '#D9D9D9', // Color del borde
-                        borderRadius: 10, // Borde redondeado
-                        overflow: 'hidden', // Para asegurar que el borde se muestre correctamente
-                    }}
+                    style={styles.pressable}
                 >
                     <Image
                         source={require('../../../assets/images/MarketDataImg.png')}
-                        style={{ width: '100%', height: '100%', borderRadius: 10 }}
+                        style={styles.image}
                     />
                 </Pressable>
             </View>
@@ -31,25 +23,11 @@ export default function VistaHomeBuda({ navigation }: any) {
                 <Pressable 
                     // Redirigir a vista Abonos y Retiros
                     onPress={() => navigation.navigate("Abonos y Retiros")}
-                    style={{
-                        width: 300,
-                        height: 200,
-                        borderWidth: 1, // Añadir borde
-                        borderColor: '#D9D9D9', // Color del borde
-                        borderRadius: 10, // Borde redondeado
-                        overflow: 'hidden', // Para asegurar que el borde se muestre correctamente
-                    }}
+                    style={styles.pressable}
                 >
                     <Image 
                         source={require('../../../assets/images/AbonosRetiros.webp')}
-                        style={{
-                            width: 300,
-                            height: 200,
-                            borderWidth: 2, // Añadir borde
-                            borderColor: '#D9D9D9', // Color del borde
-                            borderRadius: 10, // Borde redondeado
-                            overflow: 'hidden', // Para asegurar que el borde se muestre correctamente
-                        }}
+                        style={styles.image}
                     />
                 </Pressable>
             </View>
@@ -65,7 +43,18 @@ export default function VistaHomeBuda({ navigation }: any) {
                     />
                 </Pressable>
             </View>
-            
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', marginTop: 20, marginBottom: 80 }}>
+                <Pressable 
+                    // Redirigir a vista Abonos y Retiros
+                    onPress={() => navigation.navigate("Volumen Mercado")}
+                    style={{ width: 300, height: 220 }}
+                >
+                    <Image 
+                        source={require('../../../assets/images/VolumenMercado.png')}
+                        style={{ width: '100%', height: '100%', borderRadius: 10 }}
+                    />
+                </Pressable>
+            </View>
         </VStack>
     </ScrollView>
 );
@@ -74,5 +63,17 @@ export default function VistaHomeBuda({ navigation }: any) {
 const styles = StyleSheet.create({
     container: {
         paddingTop: 50,
+    },
+    pressable: {
+        width: 300,
+        height: 250,
+        borderColor: '#D9D9D9',
+        borderRadius: 10,
+        overflow: 'hidden',
+    },
+    image: {
+        width: '100%',
+        height: '100%',
+        borderRadius: 10,
     },
 });

@@ -8,29 +8,15 @@ import TableModal from '@/components/ModalComponent';
 import { useNavigation } from '@react-navigation/native';
 
 
-import db from '../../../database/firebase';
+import { db } from '@/database/firebase';
 
 const VistaEstadoMercado = () => {
 
-    const navigation = useNavigation();
 
     const [marketId, setMarketId] = useState('');
     const [apiData, setApiData] = useState<any>(null);
     const [loading, setLoading] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
-
-    useEffect(() => {
-        // Personaliza las opciones de navegación aquí
-        navigation.setOptions({
-          headerLeft: () => (
-            <IconButton
-              icon={<ChevronLeftIcon name="chevron-left" size={5} color="blue"/>} // Icono de ChevronLeftIcon
-              colorScheme="dark" // Ajusta el esquema de color según tu tema
-              onPress={() => navigation.goBack()} // Acción al presionar el botón
-            />
-          ),
-        });
-      }, []);
 
     const fetchDataApiBuda = async (marketId: string) => {
 
@@ -51,9 +37,9 @@ const VistaEstadoMercado = () => {
 
     const saveDataToFirestore = async (data: any) => {
         try {
-            await db.db.collection('marketData').add(data);
+            await db.collection('marketData').add(data);
         } catch (error) {
-            await db.db.collection('marketIdError').add(data);
+            await db.collection('marketIdError').add(data);
             console.error('Error saving data to Firestore: ', error);
             Alert.alert('Error', 'Failed to save data to Firestore');
         }

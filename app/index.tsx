@@ -30,17 +30,74 @@ const MenuStack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 const HomeStackScreen = () => (
-    <HomeStack.Navigator>
+    <HomeStack.Navigator
+        screenOptions={({ navigation }) => ({
+            headerStyle: {
+                backgroundColor: '#0e7490',
+                height: 140,
+                borderWidth: 0,
+                elevation: 0,
+                shadowOpacity: 0,
+
+            },
+            headerTintColor: '#fff', // Color del texto del encabezado
+            headerTitleStyle: {
+                fontWeight: 'bold', // Estilo del título del encabezado
+            },
+            })}
+    >
         <HomeStack.Screen name="Home" component={VistaHome} />
         <HomeStack.Screen name="HomeBuda" component={VistaHomeBuda} />
     </HomeStack.Navigator>
 );
 
 const HomeBudaStackScreen = () => (
-    <HomeBudaStack.Navigator>
-        <HomeBudaStack.Screen name="Estado Mercado" component={VistaEstadoMercado} />
-        <HomeBudaStack.Screen name="Abonos y Retiros" component={VistaAbonoRetiro} />
-        <HomeBudaStack.Screen name="Volumen Mercado" component={VistaVolumenDeMercado} />
+    <HomeBudaStack.Navigator 
+        screenOptions={({ navigation }) => ({
+        headerStyle: {
+            backgroundColor: '#0e7490',
+            height: 140,
+            borderWidth: 0,
+            elevation: 0,
+            shadowOpacity: 0,
+
+        },
+        headerTintColor: '#fff', // Color del texto del encabezado
+        headerTitleStyle: {
+            fontWeight: 'bold', // Estilo del título del encabezado
+        },
+        headerLeft: () => (
+            <TouchableOpacity
+                onPress={() => navigation.goBack()}>
+            <HeaderBackButton 
+                tintColor="#fff" // Color del botón de retroceso
+                style={styles.buttonContainer} 
+            />
+            </TouchableOpacity>
+        ),
+        })}
+    >
+        <HomeBudaStack.Screen 
+            name="Estado Mercado" 
+            component={VistaEstadoMercado}
+            options={{
+                title: 'Estado Mercado',
+            }}
+        />
+        <HomeBudaStack.Screen 
+            name="Abonos y Retiros" 
+            component={VistaAbonoRetiro}
+            options={{
+                title: 'Abonos y Retiros',
+            }}
+        />
+        <HomeBudaStack.Screen 
+            name="Volumen Mercado" 
+            component={VistaVolumenDeMercado} 
+            options={{
+                title: 'Volumen Mercado',
+            }}
+        />
     </HomeBudaStack.Navigator>
 );
 
@@ -49,7 +106,7 @@ const MenuStackScreen = () => (
         screenOptions={({ navigation }) => ({
         headerStyle: {
             backgroundColor: '#0e7490',
-            height: 80,
+            height: 140,
             borderWidth: 0,
             elevation: 0,
             shadowOpacity: 0,
@@ -74,7 +131,7 @@ const MenuStackScreen = () => (
         name="Perfil" 
         component={VistaPerfil}
         options={{
-            title: 'Mi Perfil'
+            title: 'Mi Perfil',
         }}
     />
     </MenuStack.Navigator>
@@ -89,10 +146,12 @@ const TabNavigator = () => {
             tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
             headerShown: false,
             tabBarStyle: {
-            height: 60,
+            height: 99,
+            width: '100%',
             position: 'absolute',
-            borderWidth: 1,
             borderColor: '#D9D9D9',
+            backgroundColor: '#000e21',
+            paddingTop: 20
         },
     }}
     >
@@ -102,7 +161,7 @@ const TabNavigator = () => {
             options={{
             tabBarShowLabel: false,
             tabBarIcon: ({ color, focused }) => (
-                <TabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
+                <TabBarIcon name={focused ? 'home' : 'home-outline'} color='#dbeafe' />
             ),
             }} 
         />
@@ -112,17 +171,17 @@ const TabNavigator = () => {
             options={{
             tabBarShowLabel: false,
             tabBarIcon: ({ color, focused }) => (
-                <TabBarIcon name={focused ? 'settings' : 'settings'} color={color} />
+                <TabBarIcon name={focused ? 'search' : 'search-outline'} color='#dbeafe' />
             ),
             }} 
         />
         <Tab.Screen 
             name="Perfil" 
-            component={MenuStackScreen} 
+            component={MenuStackScreen}
             options={{
             tabBarShowLabel: false,
             tabBarIcon: ({ color, focused }) => (
-                <TabBarIcon name={focused ? 'menu' : 'menu'} color={color} />
+                <TabBarIcon name={focused ? 'person-circle' : 'person-circle-outline'} color='#dbeafe' />
             ),
             }} 
         />

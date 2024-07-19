@@ -6,7 +6,7 @@ import { ThemedView } from '@/components/ThemedView';
 import { useState } from 'react';
 
 // Dependencias Firebase
-import db from '../../../database/firebase';
+import { db } from '@/database/firebase';
 import { Button, Center, Input } from 'native-base';
 
 const Table = ({ data }: any) => {

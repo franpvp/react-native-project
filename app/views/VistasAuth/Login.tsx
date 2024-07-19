@@ -3,7 +3,7 @@ import { Center, Text } from "native-base";
 import { View, StyleSheet, TouchableOpacity, ScrollView, TextInput } from 'react-native';
 import { authFirebase } from "@/database/firebase";
 import { ActivityIndicator, useTheme } from 'react-native-paper';
-import { User, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -55,7 +55,6 @@ const Login = () => {
                             style={styles.input}
                         ></TextInput>
                     </Center>
-                    
                 </View>
                 <View>
                     <Text style={styles.label}>Contraseña</Text>

@@ -8,7 +8,7 @@ import { useState } from 'react';
 import { Button, Center, Input } from "native-base";
 
 // Dependencia Firestore
-import db from '../../../database/firebase';
+import { db } from '@/database/firebase';
 import TableModal from '@/components/ModalComponent';
 
 export default function VistaAbonoRetiro() {
