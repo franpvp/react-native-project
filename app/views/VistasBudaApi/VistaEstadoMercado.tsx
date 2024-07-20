@@ -12,7 +12,6 @@ import { db } from '@/database/firebase';
 
 const VistaEstadoMercado = () => {
 
-
     const [marketId, setMarketId] = useState('');
     const [apiData, setApiData] = useState<any>(null);
     const [loading, setLoading] = useState(false);

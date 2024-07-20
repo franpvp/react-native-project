@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Center, Avatar, Text, Box, Button } from "native-base";
+import { Center, Avatar, Text, Box, Button, VStack } from "native-base";
 import { View, StyleSheet, TouchableOpacity, ScrollView, Alert, TextInput, SafeAreaView, StatusBar } from 'react-native';
 import CustomInput from '@/components/CustomInput';
 import * as ImagePicker from 'expo-image-picker';
@@ -160,86 +160,81 @@ export default function Perfil() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-        <ScrollView contentContainerStyle={styles.scrollView}>
-          <View style={{justifyContent: 'center', alignItems: 'center'}}>
-            <Box bg="primary.700" paddingTop={14} alignSelf="center" w='100%' height='150px'>
+      <ScrollView>
+        <VStack alignItems="center" paddingBottom={10}>
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+            <Box bg="primary.700" paddingTop={14} alignSelf="center" w='500px' h='150px'>
               <Avatar
-                bg="gray.200"
-                alignSelf="center"
-                size="200px"
-                borderWidth={5}
-                borderColor='#cbd5e1'
-                source={{ uri: image }}
+                    bg="gray.200"
+                    alignSelf="center"
+                    size="200px"
+                    borderWidth={5}
+                    borderColor='#cbd5e1'
+                    source={{ uri: image }}
               />
             </Box>
+            
           </View>
-          <Box alignSelf="center" marginTop={20}>
+          <Box alignSelf="center">
             <TouchableOpacity onPress={pickImage}>
               <Box style={styles.btnSubirFoto}>
                 <Icon name="camera" size={20} color="black" />
               </Box>
             </TouchableOpacity>
           </Box>
-          <Box alignSelf="center" marginTop='2px' marginBottom='10px' >
-            <TouchableOpacity >
+          <Box alignSelf="center" marginTop='80px' marginBottom='15px' >
+            <TouchableOpacity>
               <Button onPress={pickDocument} color='blue.700'>Subir PDF</Button>
             </TouchableOpacity>
           </Box>
           
-          <View style={{justifyContent: 'center', alignItems: 'center'}}>
-            <Box marginTop={2}>
-              <Text style={styles.textoPerfil}>Francisca Valdivia</Text>
-            </Box>
-            <View style={styles.inputContainer}>
-              <Text style={styles.label} mt={5}>Nombre Completo</Text>
-              <CustomInput
-                value={nombreCompleto}
-                onChangeText={setNombreCompleto}
-                placeholder="Ingrese su nombre completo"
-                style={styles.customInput}
-              />
-            </View>
-            <View style={styles.inputContainer} marginBottom='20'>
-              <Text style={styles.label}>Email</Text>
-              <CustomInput
-                value={email}
-                onChangeText={setEmail}
-                placeholder="Ingrese email"
-                style={styles.customInput}
-              />
-              <TouchableOpacity onPress={saveUserDataToFirestore} style={styles.saveButton}>
-                <Text style={styles.saveButtonText}>Guardar Datos</Text>
-              </TouchableOpacity>
-            </View>
-            
-          </View>
-          <Box marginTop={8} marginBottom={20}>
-            <View style={{ justifyContent: 'center', alignItems: 'center'}}>
-              <CustomInput
-                value={message}
-                onChangeText={setMessage}
-                placeholder="Ingrese mensaje a encriptar"
-                style={styles.encryptInput}
-              />
-              <TouchableOpacity onPress={handlePress} style={styles.saveEncryptButton}>
-                <Text style={styles.encryptButton}>Encriptar</Text>
-              </TouchableOpacity>
-            </View>
+          <Box>
+            <Text style={styles.textoPerfil}>Francisca Valdivia</Text>
           </Box>
-          
-          
-      </ScrollView>
-    </SafeAreaView>
+          <View style={styles.inputContainer}>
+            <Text style={styles.label} mt={5}>Nombre Completo</Text>
+            <CustomInput
+              value={nombreCompleto}
+              onChangeText={setNombreCompleto}
+              placeholder="Ingrese su nombre completo"
+              style={styles.customInput}
+            />
+          </View>
+          <View style={styles.inputContainer} marginBottom='20'>
+            <Text style={styles.label}>Email</Text>
+            <CustomInput
+              value={email}
+              onChangeText={setEmail}
+              placeholder="Ingrese email"
+              style={styles.customInput}
+            />
+            <TouchableOpacity onPress={saveUserDataToFirestore} style={styles.saveButton}>
+              <Text style={styles.saveButtonText}>Guardar Datos</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.inputContainer} marginBottom='20'>
+            <Box marginTop={5} marginBottom={20}>
+                <CustomInput
+                  value={message}
+                  onChangeText={setMessage}
+                  placeholder="Ingrese mensaje a encriptar"
+                  style={styles.encryptInput}
+                />
+                <Center>
+                  <TouchableOpacity onPress={handlePress} style={styles.saveEncryptButton}>
+                    <Text style={styles.encryptButton}>Encriptar</Text>
+                  </TouchableOpacity>
+                </Center>
+                
+              </Box>
+          </View>
+        </VStack>
+    </ScrollView>
     
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingTop: StatusBar.currentHeight,
-  },
   scrollView: {
     marginHorizontal: 20,
   },
@@ -270,7 +265,7 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     borderRadius: 10,
     padding: 5,
-    width:'80%',
+    width:'100%',
     color: 'gray',
   },
   textoPerfil: {
@@ -278,10 +273,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   saveButton: {
-    marginTop: 10,
     width: '80%',
-    backgroundColor: '#0e7490',
     padding: 10,
+    marginTop: 10,
+    justifyContent:'center',
+    backgroundColor: '#0e7490',
     borderRadius: 30,
   },
   saveEncryptButton: {
@@ -320,8 +316,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#D9D9D9',
     borderRadius: '50%',
-    zIndex: 1000,
-    bottom: 30,
     left: 55
     
   }

@@ -9,7 +9,7 @@ import { Button, Center, Input } from "native-base";
 
 // Dependencia Firestore
 import { db } from '@/database/firebase';
-import TableModal from '@/components/ModalComponent';
+import TableModal from '@/components/ModalAbonosRetiros';
 
 export default function VistaAbonoRetiro() {
 
@@ -24,7 +24,7 @@ export default function VistaAbonoRetiro() {
   // Ejemplo para currency = 'btc' y para transaction_type = 'withdrawal'
   const fetchDataFromApiAR = async (currency: string, transactionType: string) => {
     try {
-      const response = await fetch(`https://www.buda.com/api/v2/currencies/${currency}/fees/${transactionType}`);
+      const response = await fetch(`http://localhost:8080/api/consultar-costos/${currency}/${transactionType}`);
       if (!response.ok) {
         throw new Error('No hay respuesta de API');
       }
