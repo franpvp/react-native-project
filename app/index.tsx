@@ -22,10 +22,17 @@ import VistaPerfil from '@/app/views/VistaPerfil/Perfil';
 import Login from '@/app/views/VistasAuth/Login';
 import Registro from '@/app/views/VistasAuth/Registro';
 import { authFirebase } from '@/database/firebase';
+import VistaIndicador from './views/VistasIndicadoresApi/VistaIndicadores';
+import VistaTipoIndicador from './views/VistasIndicadoresApi/VistaTipoIndicador';
+import VistaFechaTipoIndicador from './views/VistasIndicadoresApi/VistaFechaTipoIndicador';
+import VistaAnioTipoIndicador from './views/VistasIndicadoresApi/VistaAnioTipoIndicador';
+import VistaHomeIndicadores from './views/VistasIndicadoresApi/VistaHomeIndicadores';
+import VistaIndicadores from './views/VistasIndicadoresApi/VistaIndicadores';
 
 const AuthStack = createStackNavigator();
 const HomeStack = createStackNavigator();
 const HomeBudaStack = createStackNavigator();
+const IndicadorStack = createStackNavigator();
 const MenuStack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -47,7 +54,8 @@ const HomeStackScreen = () => (
             })}
     >
         <HomeStack.Screen name="Home" component={VistaHome} />
-        <HomeStack.Screen name="HomeBuda" component={VistaHomeBuda} />
+        <HomeStack.Screen name="Buda" component={VistaHomeBuda} />
+        <HomeStack.Screen name="Indicadores" component={VistaHomeIndicadores} />
     </HomeStack.Navigator>
 );
 
@@ -100,6 +108,66 @@ const HomeBudaStackScreen = () => (
         />
     </HomeBudaStack.Navigator>
 );
+
+const IndicadorStackScreen = () => {
+    <IndicadorStack.Navigator 
+        screenOptions={({ navigation }) => ({
+        headerStyle: {
+            backgroundColor: '#0e7490',
+            height: 140,
+            borderWidth: 0,
+            elevation: 0,
+            shadowOpacity: 0,
+
+        },
+        headerTintColor: '#fff', // Color del texto del encabezado
+        headerTitleStyle: {
+            fontWeight: 'bold', // Estilo del título del encabezado
+        },
+        headerLeft: () => (
+            <TouchableOpacity
+                onPress={() => navigation.goBack()}>
+            <HeaderBackButton 
+                tintColor="#fff" // Color del botón de retroceso
+                style={styles.buttonContainer} 
+            />
+            </TouchableOpacity>
+        ),
+        })}
+    >
+        <IndicadorStack.Screen
+            name="Indicadores" 
+            component={VistaIndicadores} 
+            options={{
+                title: 'Indicadores',
+            }}
+        />
+        <IndicadorStack.Screen
+            name="Tipo Indicador" 
+            component={VistaTipoIndicador} 
+            options={{
+                title: 'Tipo Indicadores',
+            }}
+        />
+        <IndicadorStack.Screen
+            name="Tipo Indicador Fecha" 
+            component={VistaFechaTipoIndicador} 
+            options={{
+                title: 'Tipo Indicador Por Fecha',
+            }}
+        />
+        <IndicadorStack.Screen
+            name="Tipo Indicador Año" 
+            component={VistaAnioTipoIndicador}
+            options={{
+                title: 'Tipo Indicador Por Año',
+            }}
+        />
+
+    </IndicadorStack.Navigator>
+}
+
+
 
 const MenuStackScreen = () => (
     <MenuStack.Navigator

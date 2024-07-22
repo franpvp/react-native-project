@@ -2,15 +2,17 @@ import React, { useState } from "react";
 import { VStack, Center, Box } from "native-base";
 import {View, Image, StyleSheet, Button, Pressable} from 'react-native';
 import { ScrollView } from "react-native";
+import { ThemedText } from "@/components/ThemedText";
 
 export default function VistaHome({ navigation }: any) {
 
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
       <VStack alignItems="center" paddingBottom={30} style={{ flex: 1 }}>
+      <ThemedText>Consultar API's Públicas</ThemedText>
           <View style={styles.centeredView}>
             <Pressable
-              onPress={() => navigation.navigate("HomeBuda")}
+              onPress={() => navigation.navigate("Buda")}
               style={styles.pressable}
             >
               <Image
@@ -21,7 +23,7 @@ export default function VistaHome({ navigation }: any) {
           </View>
           <View style={styles.centeredView}>
             <Pressable
-              onPress={() => navigation.navigate("Abonos y Retiros")}
+              onPress={() => navigation.navigate("Indicadores")}
               style={styles.pressableSmaller}
             >
               <Image

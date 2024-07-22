@@ -43,18 +43,6 @@ export default function VistaHomeBuda({ navigation }: any) {
                     />
                 </Pressable>
             </View>
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', marginTop: 20, marginBottom: 80 }}>
-                <Pressable 
-                    // Redirigir a vista Abonos y Retiros
-                    onPress={() => navigation.navigate("Volumen Mercado")}
-                    style={{ width: 300, height: 220 }}
-                >
-                    <Image 
-                        source={require('../../../assets/images/VolumenMercado.png')}
-                        style={{ width: '100%', height: '100%', borderRadius: 10 }}
-                    />
-                </Pressable>
-            </View>
         </VStack>
     </ScrollView>
 );

@@ -34,7 +34,7 @@ export default function VistaVolumenMercado() {
 
   const fetchDataFromApiVolume = async (market_id: string) => {
     try {
-      const response = await fetch(`https://www.buda.com/api/v2/markets/${market_id}/volume`);
+      const response = await fetch(`http://localhost:8080/api/consultar-volumen/${market_id}`);
       if (!response.ok) {
         throw new Error('No hay respuesta de API');
       }

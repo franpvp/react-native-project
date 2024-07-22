@@ -1,35 +1,34 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
-import { StyleSheet, Image, TextInput, Alert, ScrollView, ActivityIndicator, View, Text } from 'react-native';
-
+import { useState } from 'react';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
+import { StyleSheet, Image, TextInput, Alert, ScrollView, ActivityIndicator, View, Text } from 'react-native';
+import { Button, Center, Input } from "native-base";
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { useState } from 'react';
-import { Button, Center, Input } from "native-base";
+
 
 // Dependencia Firestore
-// import db from '../../../database/firebase';
 import TableModal from '@/components/ModalComponent';
 import { db } from '@/database/firebase';
 
 const Table = ({ data }: any) => {
     const tableData = Object.entries(data.fee);
-  
+
     const renderItem = ({ item }: any) => (
         <View style={styles.row}>
             <Text style={styles.cell}>{item[0]}</Text>
             <Text style={styles.cell}>{Array.isArray(item[1]) ? item[1].join(' ') : item[1]}</Text>
         </View>
     );
-  
+
     return (
         <View>
             {tableData.map((item, index) => renderItem({ item, index }))}
         </View>
     );
-  };
+};
 
-const VistaTipoIndicador = () => {
+const VistaTipoIndicador = (): any => {
 
     const [tipoIndicador, setTipoIndicador] = useState<any>(null);
     const [apiData, setApiData] = useState<any>(null);
@@ -179,7 +178,7 @@ const styles = StyleSheet.create({
         fontFamily: 'monospace',
     },
     
-  });
+});
 
 
 export default VistaTipoIndicador;
