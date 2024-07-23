@@ -9,7 +9,7 @@ export default function VistaHome({ navigation }: any) {
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
       <VStack alignItems="center" paddingBottom={30} style={{ flex: 1 }}>
-      <ThemedText>Consultar API's Públicas</ThemedText>
+      <ThemedText style={styles.tituloHome}>Consultar API's Públicas</ThemedText>
           <View style={styles.centeredView}>
             <Pressable
               onPress={() => navigation.navigate("Buda")}
@@ -63,4 +63,9 @@ const styles = StyleSheet.create({
     height: '100%',
     borderRadius: 10,
   },
+  tituloHome: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginTop: 25
+  }
 });

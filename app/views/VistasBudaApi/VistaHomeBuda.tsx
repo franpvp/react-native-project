@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { VStack, Center } from "native-base";
 import {View, Image, StyleSheet, Button, Pressable} from 'react-native';
 import { ScrollView } from "react-native";
+import { ThemedText } from "@/components/ThemedText";
 
 export default function VistaHomeBuda({ navigation }: any) {
     return (
@@ -18,6 +19,7 @@ export default function VistaHomeBuda({ navigation }: any) {
                         style={styles.image}
                     />
                 </Pressable>
+                <ThemedText style={styles.tituloHome}>Estado Mercado</ThemedText>
             </View>
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', marginTop: 20 }}>
                 <Pressable 
@@ -30,8 +32,9 @@ export default function VistaHomeBuda({ navigation }: any) {
                         style={styles.image}
                     />
                 </Pressable>
+                <ThemedText style={styles.tituloHome}>Costos Abonos y Retiros</ThemedText>
             </View>
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', marginTop: 20 }}>
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', marginTop: 20, marginBottom: 80 }}>
                 <Pressable 
                     // Redirigir a vista Abonos y Retiros
                     onPress={() => navigation.navigate("Volumen Mercado")}
@@ -42,7 +45,9 @@ export default function VistaHomeBuda({ navigation }: any) {
                         style={{ width: '100%', height: '100%', borderRadius: 10 }}
                     />
                 </Pressable>
+                <ThemedText style={styles.tituloHome}>Volumen Mercado</ThemedText>
             </View>
+            
         </VStack>
     </ScrollView>
 );
@@ -64,4 +69,9 @@ const styles = StyleSheet.create({
         height: '100%',
         borderRadius: 10,
     },
+    tituloHome: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginTop: 25
+    }
 });

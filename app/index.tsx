@@ -9,8 +9,8 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-import { User, onAuthStateChanged } from 'firebase/auth';
-
+import { User, onAuthStateChanged, signInWithEmailAndPassword} from 'firebase/auth';
+import { authFirebase } from '@/database/firebase';
 
 // Vistas
 import VistaHome from '@/app/views/VistaHome';
@@ -21,14 +21,16 @@ import VistaEstadoMercado from '@/app/views/VistasBudaApi/VistaEstadoMercado';
 import VistaPerfil from '@/app/views/VistaPerfil/Perfil';
 import Login from '@/app/views/VistasAuth/Login';
 import Registro from '@/app/views/VistasAuth/Registro';
-import { authFirebase } from '@/database/firebase';
+
 import VistaIndicador from './views/VistasIndicadoresApi/VistaIndicadores';
 import VistaTipoIndicador from './views/VistasIndicadoresApi/VistaTipoIndicador';
 import VistaFechaTipoIndicador from './views/VistasIndicadoresApi/VistaFechaTipoIndicador';
 import VistaAnioTipoIndicador from './views/VistasIndicadoresApi/VistaAnioTipoIndicador';
 import VistaHomeIndicadores from './views/VistasIndicadoresApi/VistaHomeIndicadores';
 import VistaIndicadores from './views/VistasIndicadoresApi/VistaIndicadores';
+import { SafeAreaFrameContext } from 'react-native-safe-area-context';
 
+const Stack = createStackNavigator();
 const AuthStack = createStackNavigator();
 const HomeStack = createStackNavigator();
 const HomeBudaStack = createStackNavigator();
@@ -167,8 +169,6 @@ const IndicadorStackScreen = () => {
     </IndicadorStack.Navigator>
 }
 
-
-
 const MenuStackScreen = () => (
     <MenuStack.Navigator
         screenOptions={({ navigation }) => ({
@@ -209,7 +209,6 @@ const TabNavigator = () => {
     const colorScheme = useColorScheme();
     return (
     <Tab.Navigator
-        initialRouteName="Login"
         screenOptions={{
             tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
             headerShown: false,
@@ -258,7 +257,6 @@ const TabNavigator = () => {
 };
 
 
-
 export default function App() {
 
     const auth = authFirebase;
@@ -266,20 +264,22 @@ export default function App() {
 
     useEffect(() => {
         onAuthStateChanged(auth, (user) => {
-            console.log('user ', user);
+            console.log('user ', user); // Verifica si el usuario está siendo detectado aquí
             setUser(user);
         });
+    
     }, []);
 
     return (
     <NativeBaseProvider>
-        {user ? (
-        <TabNavigator />
-    ) : (
-        <AuthStack.Navigator>
-            <AuthStack.Screen name="Login" component={Login} options={{ headerShown: false }} />
-        </AuthStack.Navigator>
-    )}
+        <Stack.Navigator initialRouteName='Login'>
+            {user ? (
+                <Stack.Screen name='Home' component={TabNavigator} options={{ headerShown: false }}/>
+            ) : (
+                <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
+            )}
+        </Stack.Navigator>
+    
     </NativeBaseProvider>
     );
 }

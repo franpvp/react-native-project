@@ -18,7 +18,6 @@ const VistaEstadoMercado = () => {
     const [modalVisible, setModalVisible] = useState(false);
 
     const fetchDataApiBuda = async (marketId: string) => {
-
         try {
             // Consulta a servicio Java Springboot
             const response = await fetch(`http://localhost:8080/api/consultar-mercado/${marketId}`);

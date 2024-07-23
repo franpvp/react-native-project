@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Center, Avatar, Text, Box, Button, VStack } from "native-base";
 import { View, StyleSheet, TouchableOpacity, ScrollView, Alert, TextInput, SafeAreaView, StatusBar } from 'react-native';
 import CustomInput from '@/components/CustomInput';
@@ -7,19 +7,36 @@ import * as DocumentPicker from 'expo-document-picker';
 import * as Crypto from 'expo-crypto';
 import Icon from 'react-native-vector-icons/Ionicons';
 
-import { db, storage } from '../../../database/firebase';
+import { db, storage, authFirebase } from "@/database/firebase";
+import { User, onAuthStateChanged} from 'firebase/auth';
+
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 
 export default function Perfil() {
-  const [nombreCompleto, setNombreCompleto] = useState('');
+  const [user, setUser] = useState(null);
+  const [nombre, setNombre] = useState('');
   const [email, setEmail] = useState('');
-  const [telefono, setTelefono] = useState('');
   const [image, setImage] = useState(null);
-  const [uploading, setUploading] = useState(false);
   const [transferred, setTransferred] = useState(0);
   const [pdfUri, setPdfUri] = useState(null);
-
   const [message, setMessage] = useState('');
+
+  const auth = authFirebase;
+  const userAuth = auth.currentUser;
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUser(user);
+      } else {
+        setUser(null);
+      }
+      setLoading(false);
+    });
+
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
+  }, []);
 
   const pickDocument = async () => {
     try {
@@ -89,7 +106,8 @@ export default function Perfil() {
   const saveImage = async (imageUri) => {
     try {
       setImage(imageUri);
-      uploadImageToFirebase(imageUri);
+      user.photoURL = imageUri;
+      uploadImageToFirebase(user.photoURL);
     } catch (error) {
       console.error("Error guardando imagen: ", error.message);
       Alert.alert("Error", "Error guardando imagen: " + error.message);
@@ -125,7 +143,7 @@ export default function Perfil() {
 
   const saveUserDataToFirestore = async () => {
     try {
-      const userDataArray = [nombreCompleto, email];
+      const userDataArray = [nombre, email];
       await db.collection('listasDatosUsuarios').add({ 
         datosLista: userDataArray
       });
@@ -159,75 +177,80 @@ export default function Perfil() {
     await saveMessageToFirestore(encryptedMessage);
   };
 
+
   return (
       <ScrollView>
         <VStack alignItems="center" paddingBottom={10}>
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+          {userAuth ? (
+              <><View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
             <Box bg="primary.700" paddingTop={14} alignSelf="center" w='500px' h='150px'>
-              <Avatar
-                    bg="gray.200"
-                    alignSelf="center"
-                    size="200px"
-                    borderWidth={5}
-                    borderColor='#cbd5e1'
-                    source={{ uri: image }}
-              />
+              {userAuth.photoURL && (
+                  <Avatar
+                  bg="gray.200"
+                  alignSelf="center"
+                  size="200px"
+                  borderWidth={5}
+                  borderColor='#cbd5e1'
+                  source={{ uri: user.photoURL }} />
+              )}
             </Box>
-            
-          </View>
-          <Box alignSelf="center">
-            <TouchableOpacity onPress={pickImage}>
-              <Box style={styles.btnSubirFoto}>
-                <Icon name="camera" size={20} color="black" />
-              </Box>
-            </TouchableOpacity>
-          </Box>
-          <Box alignSelf="center" marginTop='80px' marginBottom='15px' >
-            <TouchableOpacity>
-              <Button onPress={pickDocument} color='blue.700'>Subir PDF</Button>
-            </TouchableOpacity>
-          </Box>
-          
-          <Box>
-            <Text style={styles.textoPerfil}>Francisca Valdivia</Text>
-          </Box>
-          <View style={styles.inputContainer}>
-            <Text style={styles.label} mt={5}>Nombre Completo</Text>
-            <CustomInput
-              value={nombreCompleto}
-              onChangeText={setNombreCompleto}
-              placeholder="Ingrese su nombre completo"
-              style={styles.customInput}
-            />
-          </View>
-          <View style={styles.inputContainer} marginBottom='20'>
-            <Text style={styles.label}>Email</Text>
-            <CustomInput
-              value={email}
-              onChangeText={setEmail}
-              placeholder="Ingrese email"
-              style={styles.customInput}
-            />
-            <TouchableOpacity onPress={saveUserDataToFirestore} style={styles.saveButton}>
-              <Text style={styles.saveButtonText}>Guardar Datos</Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.inputContainer} marginBottom='20'>
-            <Box marginTop={5} marginBottom={20}>
+          </View><Box alignSelf="center">
+              <TouchableOpacity onPress={pickImage}>
+                <Box style={styles.btnSubirFoto}>
+                  <Icon name="camera" size={20} color="black" />
+                </Box>
+              </TouchableOpacity>
+            </Box>
+            <Box alignSelf="center" marginTop='80px' marginBottom='15px'>
+              <TouchableOpacity>
+                <Button onPress={pickDocument} color='blue.700'>Subir PDF</Button>
+              </TouchableOpacity>
+            </Box>
+            <Box>
+              <Text style={styles.textoPerfil}>{userAuth.displayName}</Text>
+            </Box>
+            <View style={styles.inputContainer}>
+              <Text style={styles.label} mt={5}>Nombre</Text>
+              <CustomInput
+                value={nombre}
+                onChangeText={setNombre}
+                placeholder="Ingrese su nombre"
+                style={styles.customInput} />
+            </View>
+            <View style={styles.inputContainer} marginBottom='20'>
+              <Text style={styles.label}>Email</Text>
+              <CustomInput
+                value={email}
+                onChangeText={setEmail}
+                placeholder="Ingrese email"
+                style={styles.customInput} />
+              <TouchableOpacity onPress={saveUserDataToFirestore} style={styles.saveButton}>
+                <Text style={styles.saveButtonText}>Guardar Datos</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.inputContainer} marginBottom='20'>
+              <Box marginTop={5} marginBottom={20}>
                 <CustomInput
                   value={message}
                   onChangeText={setMessage}
                   placeholder="Ingrese mensaje a encriptar"
-                  style={styles.encryptInput}
-                />
+                  style={styles.encryptInput} />
                 <Center>
                   <TouchableOpacity onPress={handlePress} style={styles.saveEncryptButton}>
                     <Text style={styles.encryptButton}>Encriptar</Text>
                   </TouchableOpacity>
                 </Center>
-                
+                <Center>
+                  <TouchableOpacity onPress={() => auth.signOut()} style={styles.logoutButton}>
+                    <Text style={styles.textButton}>Cerrar Sesión</Text>
+                  </TouchableOpacity>
+                </Center>
+
               </Box>
-          </View>
+            </View></>
+          ) : (
+              <Text>Usuario no autenticado</Text>
+          )}
         </VStack>
     </ScrollView>
     
@@ -295,10 +318,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
 },
   encryptButton: {
-  color: '#fff',
-  fontWeight: 'bold',
-  alignItems: 'center',
-  textAlign: 'center'
+    color: '#fff',
+    fontWeight: 'bold',
+    alignItems: 'center',
+    textAlign: 'center'
 },
   scrollView: {
   flex: 1,
@@ -318,5 +341,19 @@ const styles = StyleSheet.create({
     borderRadius: '50%',
     left: 55
     
+  },
+  logoutButton: {
+    width: '100%',
+    padding: 10,
+    marginTop: 50,
+    justifyContent:'center',
+    backgroundColor: 'red',
+    borderRadius: 30,
+  },
+  textButton: {
+    color: '#fff',
+    fontWeight: 'bold',
+    alignItems: 'center',
+    textAlign: 'center',
   }
 });

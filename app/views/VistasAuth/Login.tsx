@@ -5,10 +5,11 @@ import { authFirebase } from "@/database/firebase";
 import { ActivityIndicator, useTheme } from 'react-native-paper';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 
-const Login = () => {
+const Login = ({navigation}: any) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
+
     const auth = authFirebase;
 
     const logearse = async () => {
@@ -24,19 +25,7 @@ const Login = () => {
         }
     }
 
-    const registrarse = async () => {
-        setLoading(true);
-        try {
-            const response =  await createUserWithEmailAndPassword(auth, email, password);
-            console.log(response);
-            alert("Revisa tu correo!");
-        } catch (error: any) {
-            console.log(error);
-            alert("Registro fallido" + error.message);
-        } finally {
-            setLoading(false);
-        }
-    }
+    
 
     return (
         <View style={styles.container}>
@@ -79,14 +68,12 @@ const Login = () => {
                             </TouchableOpacity>
                         </>
                     )}
-                    <TouchableOpacity onPress={registrarse} style={[styles.button, styles.registroButton]}>
+                    <TouchableOpacity onPress={() => navigation.navigate("Registro")} style={[styles.button, styles.registroButton]}>
                         <Text style={styles.registroText}>Registro</Text>
                     </TouchableOpacity>
                 </Center>
             </ScrollView>
         </View>
-            
-        
     );
 }
 
