@@ -8,33 +8,19 @@ import { useState } from 'react';
 // Dependencias Firebase
 import { db } from '@/database/firebase';
 import { Button, Center, Input } from 'native-base';
-
-const Table = ({ data }: any) => {
-  const tableData = Object.entries(data.volume);
-
-  const renderItem = ({ item }: any) => (
-      <View style={styles.row}>
-          <Text style={styles.cell}>{item[0]}</Text>
-          <Text style={styles.cell}>{Array.isArray(item[1]) ? item[1].join(' ') : item[1]}</Text>
-      </View>
-  );
-
-  return (
-      <View>
-          {tableData.map((item, index) => renderItem({ item, index }))}
-      </View>
-  );
-};
+import React from 'react';
+import TableModal from '@/components/Modals/ModalVolumenMercado';
 
 export default function VistaVolumenMercado() {
 
   const [marketId, setMarketId] = useState('');
   const [apiData, setApiData] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
 
   const fetchDataFromApiVolume = async (market_id: string) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/consultar-volumen/${market_id}`);
+      const response = await fetch(`http://192.168.1.85:8080/api/consultar-volumen/${market_id}`);
       if (!response.ok) {
         throw new Error('No hay respuesta de API');
       }
@@ -77,7 +63,7 @@ export default function VistaVolumenMercado() {
         <ThemedView style={styles.titleContainer}>
             <ThemedText type="title">Volumen De Mercado</ThemedText>
         </ThemedView>
-        <ThemedText>Consultar volumen transado en un determinado mercado</ThemedText>
+        <ThemedText>Consultar volumen transado en un determinado mercado.</ThemedText>
         <ThemedView>
           <Input 
             size="lg" 
@@ -96,7 +82,7 @@ export default function VistaVolumenMercado() {
                 w="80%" 
                 borderRadius={40}
                 onPress={handleApiAndFirestore}>
-                    Deposito
+                    Consultar
               </Button>
           </Center>
         </ThemedView>
@@ -104,7 +90,7 @@ export default function VistaVolumenMercado() {
           {loading && <ActivityIndicator size="large" color="#0000ff" />}
           {apiData && (
               <View style={styles.jsonContainer}>
-                  <Table data={apiData} />
+                  <TableModal isOpen={modalVisible} onClose={() => setModalVisible(false)} data={apiData} />
               </View>
           )}
         </ScrollView>

@@ -1,43 +1,109 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { VStack, Center, Text } from "native-base";
-import {View, Image, StyleSheet, Button, Pressable, TextInput, TouchableOpacity} from 'react-native';
+import {View, Image, StyleSheet, Button, Pressable, TextInput, TouchableOpacity, Alert} from 'react-native';
 import { ScrollView } from "react-native";
-import { authFirebase } from "@/database/firebase";
 import { ActivityIndicator, useTheme } from 'react-native-paper';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from 'firebase/auth';
-import { v4 as uuidv4 } from 'uuid';
-import { db } from '@/database/firebase';
+import * as Crypto from 'expo-crypto';
+import { authFirebase } from "@/database/firebase";
+import { analyticsFirebase } from "@/database/firebase";
+import { db } from "@/database/firebase";
 
 const Registro = () => {
 
     const [nombre, setNombre] = useState('');
     const [email, setEmail] = useState('');
+    const [telefono, setTelefono] = useState('');
     const [password, setPassword] = useState('');
     const [repPassword, setRepPassword] = useState('');
     const [loading, setLoading] = useState(false);
 
     const auth = authFirebase;
-    const user = auth.currentUser;
+    const analytics = analyticsFirebase;
+    
+    useEffect(() => {
+        const logScreenView = async () => {
+            await analytics.logScreenView({
+                screen_name: 'Registro',
+                screen_class: 'Registro'
+            });
+        };
+        
+        logScreenView();
+    }, []);
+
+    const validateEmail = (email: string ) => {
+        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return regex.test(String(email).toLowerCase());
+    };
 
     const registrarse = async () => {
+        await analytics.logEvent('intento_de_registro');
+
+        if (!nombre || !email || !telefono || !password || !repPassword) {
+            Alert.alert('Advertencia', 'Todos los campos son requeridos');
+            return;
+        }
+        if (!validateEmail(email)) {
+            Alert.alert('Error', 'Ingrese un correo válido');
+            return;
+        }
+        if (telefono.length !== 9) {
+            Alert.alert('Error', 'El teléfono debe tener exactamente 9 dígitos');
+            return;
+        }
+        if (password !== repPassword) {
+            await analytics.logEvent('registro_contraseñas_no_coinciden')
+            Alert.alert("Advertencia", "Las contraseñas no coinciden");
+            return;
+        }
         setLoading(true);
+
         try {
-            const response =  await createUserWithEmailAndPassword(auth, email, password);
-            const user = response.user;
+            const response = auth.createUserWithEmailAndPassword(email, password);
+            const user = (await response).user;
             // Actualiza el perfil del usuario
-            await updateProfile(user, {
+            await user.updateProfile({
                 displayName: nombre,
-                photoURL: ""
+                photoURL: null
             });
-            console.log("Perfil actualizado: ", user);
+
+            const encryptedPassword = await encryptPassword(password);
+
+            // Guardar el número de teléfono en la base de datos Firestore
+            await db.collection('usuarios').doc(user.uid).set({
+                displayName: nombre,
+                email: email,
+                password: encryptedPassword,
+                phoneNumber: telefono,
+                photoURL: null
+            });
+
+            // Registra un evento si el registro es exitoso
+            await analytics.logEvent('registration_success', {
+                userId: user.uid,
+                userEmail: email,
+            });
+
             alert("Registro exitoso, revisa tu correo!");
         } catch (error: any) {
+            // Registra un evento si hay un error durante el registro
+            await analytics.logEvent('registration_error', {
+                errorMessage: error.message,
+            });
             console.log(error);
             alert("Registro fallido: " + error.message);
         } finally {
             setLoading(false);
         }
     }
+    // Encriptar contraseña
+    const encryptPassword = async (password: string) => {
+        const digest = await Crypto.digestStringAsync(
+            Crypto.CryptoDigestAlgorithm.SHA256,
+            password
+        );
+        return digest;
+    };
 
     return (
         <View style={styles.container}>
@@ -70,6 +136,19 @@ const Registro = () => {
                     </Center>
                 </View>
                 <View>
+                    <Text style={styles.label}>Telefono</Text>
+                    <Center>
+                        <TextInput
+                            value={telefono}
+                            onChangeText={setTelefono}
+                            placeholder="Telefono"
+                            keyboardType="phone-pad"
+                            maxLength={9}
+                            style={styles.input}
+                        ></TextInput>
+                    </Center>
+                </View>
+                <View>
                     <Text style={styles.label}>Contraseña</Text>
                     <Center>
                         <TextInput
@@ -79,7 +158,6 @@ const Registro = () => {
                             secureTextEntry={true}
                             style={styles.input}
                         ></TextInput>
-                        <Text style={styles.restText} marginBottom={5}>Restablecer contraseña</Text>
                     </Center>
                 </View>
                 <View>
@@ -92,14 +170,15 @@ const Registro = () => {
                             secureTextEntry={true}
                             style={styles.input}
                         ></TextInput>
-                        <Text style={styles.restText} marginBottom={5}>Restablecer contraseña</Text>
                     </Center>
                 </View>
-                <Center>
-                    <TouchableOpacity onPress={registrarse} style={[styles.button, styles.loginButton]}>
-                        <Text style={styles.loginText} >Registrarse</Text>
+                {loading ? (
+                <ActivityIndicator size="large" color="#0000ff" />
+                ) : (
+                    <TouchableOpacity onPress={registrarse} style={styles.registroButton}>
+                        <Text style={styles.registroText}>Registrarse</Text>
                     </TouchableOpacity>
-                </Center>
+                )}
             </ScrollView>
         </View>
     );
@@ -143,23 +222,19 @@ const styles = StyleSheet.create({
         width: '80%',
         borderWidth: 1
     },
-    button: {
-        justifyContent: 'center',
-        marginTop: 10,
-        padding: 10,
-        borderRadius: 20,
-        width: '80%',
-    },
     loginButton: {
         backgroundColor: '#0e7490',
         alignItems: 'center',
         width: '80%'
     },
     registroButton: {
-        marginTop: 18,
+        alignSelf: 'center',
+        marginTop: 20,
+        padding: 14,
         backgroundColor: '#0369a1',
         alignItems: 'center',
-        width: '80%'
+        width: '80%',
+        borderRadius: 20,
     },
     loginText: {
         color: 'white',

@@ -1,116 +1,73 @@
 import React, { useState, useEffect } from "react";
-import { Center, Avatar, Text, Box, Button, VStack } from "native-base";
-import { View, StyleSheet, TouchableOpacity, ScrollView, Alert, TextInput, SafeAreaView, StatusBar } from 'react-native';
-import CustomInput from '@/components/CustomInput';
+import { Center, Avatar, Text, Box, VStack } from "native-base";
+import { View, StyleSheet, TouchableOpacity, ScrollView, Alert, Pressable } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import * as DocumentPicker from 'expo-document-picker';
-import * as Crypto from 'expo-crypto';
 import Icon from 'react-native-vector-icons/Ionicons';
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { db, authFirebase, storageFirebase } from "@/database/firebase";
+import { onAuthStateChanged } from 'firebase/auth';
+import { ref, getDownloadURL  } from 'firebase/storage';
 
-import { db, storage, authFirebase } from "@/database/firebase";
-import { User, onAuthStateChanged} from 'firebase/auth';
-
-import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
-
-export default function Perfil() {
+export default function Perfil({ navigation }) {
   const [user, setUser] = useState(null);
-  const [nombre, setNombre] = useState('');
-  const [email, setEmail] = useState('');
   const [image, setImage] = useState(null);
-  const [transferred, setTransferred] = useState(0);
-  const [pdfUri, setPdfUri] = useState(null);
-  const [message, setMessage] = useState('');
-
+  const [transferred, setTransferred] = useState('');
   const auth = authFirebase;
+  const storage = storageFirebase;
   const userAuth = auth.currentUser;
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setUser(user);
+        await fetchPhotoURL(user.uid);
       } else {
         setUser(null);
       }
-      setLoading(false);
     });
 
-    // Cleanup subscription on unmount
     return () => unsubscribe();
-  }, []);
+  }, [auth]);
 
-  const pickDocument = async () => {
+  const fetchPhotoURL = async (uid) => {
     try {
-      let result = await DocumentPicker.getDocumentAsync({ type: 'application/pdf' });
-      const uri = result.assets[0].uri;
-      const name = result.assets[0].name
-
-      console.log("name ", result.assets[0].name);
-      console.log("uri ", result.assets[0].uri);
-
-      if (!result.canceled) {
-        uploadPDF(uri, name);
+      const doc = await db.collection('usuarios').doc(uid).get();
+      if (doc.exists) {
+        setImage(doc.data().photoURL);
       } else {
-        Alert.alert('Error', 'No se seleccionó ningún archivo');
+        console.log("No matching documents found.");
       }
-    } catch (err) {
-      console.error(err);
-      Alert.alert('Error', 'Error al seleccionar el documento: ' + err.message);
-    }
-  };
-
-  const uploadPDF = async (uri, name) => {
-    try {
-      const response = await fetch(uri);
-      const blob = await response.blob();
-
-      const pdfRef = ref(storage, `pdfs/${name}`);
-
-      const uploadTask = uploadBytesResumable(pdfRef, blob);
-
-      uploadTask.on('state_changed',
-        (snapshot) => {
-          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          console.log('Upload is ' + progress + '% done');
-        },
-        (error) => {
-          console.error('Error subiendo PDF: ', error);
-          Alert.alert('Error', 'Error subiendo PDF: ' + error.message);
-        },
-        async () => {
-          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-          setPdfUri(downloadURL);
-          Alert.alert('Éxito', 'PDF subido exitosamente');
-        }
-      );
-
     } catch (error) {
-      console.error('Error subiendo PDF: ', error);
-      Alert.alert('Error', 'Error subiendo PDF: ' + error.message);
+      console.error("Error fetching photoURL ", error.message);
     }
   };
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
     });
 
     if (!result.canceled) {
-      setImage(result.assets[0].uri);
-      await saveImage(result.assets[0].uri);
+      const imageUri = result.assets[0].uri;
+      setImage(imageUri);
+      await saveImage(imageUri);
     }
   };
 
   const saveImage = async (imageUri) => {
     try {
-      setImage(imageUri);
-      user.photoURL = imageUri;
-      uploadImageToFirebase(user.photoURL);
+      const url = await uploadImageToFirebase(imageUri);
+      await db.collection('usuarios').doc(userAuth.uid).update({
+        photoURL: url
+      });
+      await fetchPhotoURL(userAuth.uid);
+      Alert.alert("Imagen guardada", "La imagen se guardó correctamente");
     } catch (error) {
       console.error("Error guardando imagen: ", error.message);
-      Alert.alert("Error", "Error guardando imagen: " + error.message);
+      // Alert.alert("Error", "Error guardando imagen: " + error.message);
     }
   };
 
@@ -123,237 +80,148 @@ export default function Perfil() {
     const response = await fetch(uri);
     const blob = await response.blob();
 
-    const storageRef = ref(storage, filename);
-    const uploadTask = uploadBytesResumable(storageRef, blob);
+    const storageRef = storage.ref().child(`profileImages/${userAuth.uid}/${filename}`);
+    const uploadTask = storageRef.put(blob);
 
-    uploadTask.on('state_changed', snapshot => {
-      const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-      setTransferred(Math.round(progress));
+    return new Promise((resolve, reject) => {
+      uploadTask.on('state_changed', snapshot => {
+        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        setTransferred(Math.round(progress));
+      }, error => {
+        console.error(error);
+        reject(error);
+      }, async () => {
+        try {
+          const downloadURL = await storageRef.getDownloadURL();
+          resolve(downloadURL);
+        } catch (e) {
+          console.error(e);
+          reject(e);
+        }
+      });
     });
-
-    try {
-      await uploadTask;
-      const url = await getDownloadURL(storageRef);
-      return url;
-    } catch (e) {
-      console.error(e);
-      throw e;
-    }
-  };
-
-  const saveUserDataToFirestore = async () => {
-    try {
-      const userDataArray = [nombre, email];
-      await db.collection('listasDatosUsuarios').add({ 
-        datosLista: userDataArray
-      });
-      Alert.alert('Datos guardados exitosamente');
-    } catch (error) {
-      Alert.alert('Error guardando los datos: ' + error.message);
-    }
-  };
-
-  const encryptMessage = async (message) => {
-    const digest = await Crypto.digestStringAsync(
-      Crypto.CryptoDigestAlgorithm.SHA256,
-      message
-    );
-    return digest;
-  };
-
-  const saveMessageToFirestore = async (encryptedMessage) => {
-    try {
-      await db.collection('TablaDataEncriptada').add({
-        data: encryptedMessage
-      });
-      Alert.alert('Mensaje guardado exitosamente');
-    } catch (error) {
-      console.error('Error guardando mensaje: ', error.message);
-    }
-  };
-
-  const handlePress = async () => {
-    const encryptedMessage = await encryptMessage(message);
-    await saveMessageToFirestore(encryptedMessage);
   };
 
 
   return (
-      <ScrollView>
-        <VStack alignItems="center" paddingBottom={10}>
-          {userAuth ? (
-              <><View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Box bg="primary.700" paddingTop={14} alignSelf="center" w='500px' h='150px'>
-              {userAuth.photoURL && (
-                  <Avatar
+    <ScrollView showsHorizontalScrollIndicator={false}>
+      <VStack alignItems="center" paddingBottom={10}>
+        {userAuth ? (
+          <>
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+              <Box bg="primary.700" paddingTop={14} alignSelf="center" w='450px' h='160px' borderBottomRadius={22}>
+                <Avatar
                   bg="gray.200"
                   alignSelf="center"
                   size="200px"
                   borderWidth={5}
                   borderColor='#cbd5e1'
-                  source={{ uri: user.photoURL }} />
-              )}
-            </Box>
-          </View><Box alignSelf="center">
+                  source={{ uri: image || 'https://via.placeholder.com/200' }}
+                />
+              </Box>
+            </View>
+            <Box alignSelf="center">
               <TouchableOpacity onPress={pickImage}>
                 <Box style={styles.btnSubirFoto}>
                   <Icon name="camera" size={20} color="black" />
                 </Box>
               </TouchableOpacity>
             </Box>
-            <Box alignSelf="center" marginTop='80px' marginBottom='15px'>
-              <TouchableOpacity>
-                <Button onPress={pickDocument} color='blue.700'>Subir PDF</Button>
-              </TouchableOpacity>
-            </Box>
-            <Box>
+            <Box alignSelf="center" marginTop='90px' marginBottom='30px'>
               <Text style={styles.textoPerfil}>{userAuth.displayName}</Text>
             </Box>
+            <Box alignSelf="center" marginBottom='30px'>
+              <Text style={styles.titlePerfil}>Mis datos</Text>
+            </Box>
+            <Box alignSelf="center" w="85%" padding={5} paddingLeft={10} paddingRight={10} marginBottom={4} bg="muted.200" borderRadius={10}>
+              <Box flexDirection="row" justifyContent="space-between" alignItems="center">
+                <Text style={styles.label}>Email</Text>
+                <Text style={styles.email}>{userAuth.email}</Text>
+              </Box>
+            </Box>
+            <Box alignSelf="center" w="85%" padding={5} paddingLeft={10} paddingRight={10} bg="muted.200" borderRadius={10}>
+              <Box flexDirection="row" justifyContent="space-between" alignItems="center">
+                <Text style={styles.label}>Teléfono</Text>
+                <Text style={styles.email}>{userAuth.phoneNumber}</Text>
+              </Box>
+            </Box>
+            <Pressable
+              onPress={() => navigation.navigate("Restablecer")}
+              width='85%'
+            >
+              <Box alignSelf="center" w="100%" padding={5} paddingLeft={10} paddingRight={10} bg="muted.200" borderRadius={10} marginTop={4}>
+                <Box flexDirection="row" justifyContent="space-between" alignItems="center">
+                  <Text style={styles.label}>Restablecer contraseña</Text>
+                  <Ionicons name="chevron-forward" size={24} color="gray" />
+                </Box>
+              </Box>
+            </Pressable>
             <View style={styles.inputContainer}>
-              <Text style={styles.label} mt={5}>Nombre</Text>
-              <CustomInput
-                value={nombre}
-                onChangeText={setNombre}
-                placeholder="Ingrese su nombre"
-                style={styles.customInput} />
-            </View>
-            <View style={styles.inputContainer} marginBottom='20'>
-              <Text style={styles.label}>Email</Text>
-              <CustomInput
-                value={email}
-                onChangeText={setEmail}
-                placeholder="Ingrese email"
-                style={styles.customInput} />
-              <TouchableOpacity onPress={saveUserDataToFirestore} style={styles.saveButton}>
-                <Text style={styles.saveButtonText}>Guardar Datos</Text>
+              <TouchableOpacity onPress={() => auth.signOut()} style={styles.logoutButton}>
+                <Text style={styles.textButton}>Cerrar Sesión</Text>
               </TouchableOpacity>
             </View>
-            <View style={styles.inputContainer} marginBottom='20'>
-              <Box marginTop={5} marginBottom={20}>
-                <CustomInput
-                  value={message}
-                  onChangeText={setMessage}
-                  placeholder="Ingrese mensaje a encriptar"
-                  style={styles.encryptInput} />
-                <Center>
-                  <TouchableOpacity onPress={handlePress} style={styles.saveEncryptButton}>
-                    <Text style={styles.encryptButton}>Encriptar</Text>
-                  </TouchableOpacity>
-                </Center>
-                <Center>
-                  <TouchableOpacity onPress={() => auth.signOut()} style={styles.logoutButton}>
-                    <Text style={styles.textButton}>Cerrar Sesión</Text>
-                  </TouchableOpacity>
-                </Center>
-
-              </Box>
-            </View></>
-          ) : (
-              <Text>Usuario no autenticado</Text>
-          )}
-        </VStack>
+          </>
+        ) : (
+          <Text>Usuario no autenticado</Text>
+        )}
+      </VStack>
     </ScrollView>
-    
   );
 }
 
 const styles = StyleSheet.create({
   scrollView: {
-    marginHorizontal: 20,
+    flex: 1,
+    backgroundColor: '#fff',
   },
   inputContainer: {
-    width: '100%',
-    alignItems:'center'
+    width: '80%',
+    alignItems: 'center'
   },
   label: {
-    fontSize: 15,
-    marginBottom: 5,
-    marginLeft: 5,
-    color: '#000',
-  },
-  customInput: {
-    justifyContent: 'center',
-    backgroundColor: '#e2e8f0',
-    borderColor: '#D9D9D9',
-    width: '80%',
-    borderWidth: 0.5,
-    borderRadius: 10,
-    padding: 4,
+    fontSize: 16,
     color: 'gray',
   },
-  encryptInput: {
-    justifyContent: 'center',
-    backgroundColor: '#e2e8f0',
-    borderColor: '#D9D9D9',
-    borderWidth: 0.5,
-    borderRadius: 10,
-    padding: 5,
-    width:'100%',
-    color: 'gray',
+  titlePerfil: {
+    fontSize: 20,
+    fontWeight: '700'
   },
   textoPerfil: {
     fontSize: 22,
     fontWeight: 'bold',
   },
-  saveButton: {
-    width: '80%',
-    padding: 10,
-    marginTop: 10,
-    justifyContent:'center',
-    backgroundColor: '#0e7490',
-    borderRadius: 30,
-  },
-  saveEncryptButton: {
-    width: '80%',
-    padding: 10,
-    marginTop: 10,
-    justifyContent:'center',
-    backgroundColor: '#0e7490',
-    borderRadius: 30,
-  },
-  saveButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    alignItems: 'center',
-    textAlign: 'center',
-},
-  encryptButton: {
-    color: '#fff',
-    fontWeight: 'bold',
-    alignItems: 'center',
-    textAlign: 'center'
-},
-  scrollView: {
-  flex: 1,
-  backgroundColor: '#fff',
-  },
-  progressBarContainer: {
-  marginTop: 20,
-  },
-  btnSubirFoto:{
+  btnSubirFoto: {
     position: 'absolute',
     justifyContent: 'center',
     padding: 12,
-    width:'100px',
-    height:'100px',
+    width: '100px',
+    height: '100px',
     alignItems: 'center',
     backgroundColor: '#D9D9D9',
-    borderRadius: '50%',
+    borderRadius: 200,
     left: 55
-    
   },
   logoutButton: {
     width: '100%',
-    padding: 10,
-    marginTop: 50,
-    justifyContent:'center',
-    backgroundColor: 'red',
+    padding: 15,
+    paddingLeft: 40,
+    paddingRight: 40,
+    marginTop: 40,
+    justifyContent: 'center',
+    backgroundColor: '#dc2626',
     borderRadius: 30,
   },
   textButton: {
+    fontSize: 16,
     color: '#fff',
     fontWeight: 'bold',
     alignItems: 'center',
     textAlign: 'center',
-  }
+  },
+  email: {
+    fontSize: 16,
+    color: '#000',
+    textAlign: 'right',
+  },
 });

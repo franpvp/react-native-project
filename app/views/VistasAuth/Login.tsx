@@ -3,29 +3,53 @@ import { Center, Text } from "native-base";
 import { View, StyleSheet, TouchableOpacity, ScrollView, TextInput } from 'react-native';
 import { authFirebase } from "@/database/firebase";
 import { ActivityIndicator, useTheme } from 'react-native-paper';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import { analyticsFirebase } from "@/database/firebase";
 
-const Login = ({navigation}: any) => {
+const Login = ( {navigation}: any ) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
 
     const auth = authFirebase;
+    const analytics = analyticsFirebase;
+
+    useEffect(() => {
+        const logScreenView = async () => {
+            await analytics.logScreenView({
+                screen_name: 'Login',
+                screen_class: 'Login'
+            });
+        };
+        
+        logScreenView();
+    }, []);
 
     const logearse = async () => {
         setLoading(true);
         try {
-            const response =  await signInWithEmailAndPassword(auth, email, password);
+            const response =  await auth.signInWithEmailAndPassword(email, password);
             console.log(response);
+
+            // Registrar el evento de inicio de sesión exitoso en Firebase Analytics
+            await analytics.logEvent('login_success', {
+                screen: 'Login', // Vista donde ocurrió el evento
+                method: 'email', // Método de inicio de sesión
+            });
+            console.log("Inicio de sesión correcto");
+
         } catch (error: any) {
             console.log(error);
             alert("Inicio de sesión fallido: " + error.message);
+
+            await analytics.logEvent('login_failed', {
+                screen: 'Login', // Vista donde ocurrió el evento
+                method: 'email', // Método de inicio de sesión
+                error: error.message, // Mensaje de error
+            });
         } finally {
             setLoading(false);
         }
     }
-
-    
 
     return (
         <View style={styles.container}>

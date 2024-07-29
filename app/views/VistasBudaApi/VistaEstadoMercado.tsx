@@ -4,11 +4,10 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { Center, Input, Button, IconButton, Icon, ChevronLeftIcon } from "native-base";
 import ParallaxScrollView from '@/components/ParallaxScrollView';
-import TableModal from '@/components/ModalComponent';
+import TableModal from '@/components/Modals/ModalComponent';
 import { useNavigation } from '@react-navigation/native';
 
-
-import { db } from '@/database/firebase';
+import { db, analyticsFirebase } from '@/database/firebase';
 
 const VistaEstadoMercado = () => {
 
@@ -17,33 +16,73 @@ const VistaEstadoMercado = () => {
     const [loading, setLoading] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
 
+    const analytics = analyticsFirebase;
+    const screenActual = "VistaEstadoMercado";
+
     const fetchDataApiBuda = async (marketId: string) => {
         try {
+            // Registra un evento antes de hacer la consulta
+            await analytics.logEvent('fetch_data_api_buda_start', {
+                marketId: marketId
+            });
             // Consulta a servicio Java Springboot
-            const response = await fetch(`http://localhost:8080/api/consultar-mercado/${marketId}`);
+            const response = await fetch(`http://192.168.1.85:8080/api/consultar-mercado/${marketId}`);
             if (!response.ok) {
                 throw new Error('No hay respuesta de API');
             }
             const data = await response.json();
             console.log(data);
+
+             // Registra un evento después de una consulta exitosa
+            await analytics.logEvent('fetch_data_api_buda_success', {
+                marketId: marketId,
+                responseLength: data.length // Por ejemplo, puedes registrar la longitud de la respuesta
+            });
+
             return data;
-        } catch (error) {
+        } catch (error: any) {
             console.error(error);
+
+            // Registra un evento en caso de error
+            await analytics.logEvent('fetch_data_api_buda_error', {
+                marketId: marketId,
+                errorMessage: error.message
+            });
+
             Alert.alert('Error', 'Error al consultar API');
         }
     };
 
     const saveDataToFirestore = async (data: any) => {
         try {
+            // Registra un evento antes de intentar guardar los datos
+            await analytics.logEvent('save_data_to_firestore_start', {
+                dataId: data.id || null,
+            });
             await db.collection('marketData').add(data);
-        } catch (error) {
+
+            // Registra un evento después de guardar los datos exitosamente
+            await analytics.logEvent('save_data_to_firestore_success', {
+                dataId: data.id || null,
+            });
+        } catch (error: any) {
             await db.collection('marketIdError').add(data);
+            // Registra un evento en caso de error
+            await analytics.logEvent('save_data_to_firestore_error', {
+                dataId: data.id || null, // Suponiendo que data tiene una propiedad id
+                errorMessage: error.message,
+            });
             console.error('Error saving data to Firestore: ', error);
             Alert.alert('Error', 'Failed to save data to Firestore');
         }
     };
     
     const handleApiAndFirestore = async () => {
+    // Registra un evento de clic en el botón
+    await analytics.logEvent('button_click_buscar', {
+        screen_name: screenActual,
+        buttonName: 'handleApiAndFirestore',
+    });
     setLoading(true);
     const data = await fetchDataApiBuda(marketId);
     if (data) {

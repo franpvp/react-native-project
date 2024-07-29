@@ -9,34 +9,33 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-import { User, onAuthStateChanged, signInWithEmailAndPassword} from 'firebase/auth';
-import { authFirebase } from '@/database/firebase';
+import { FirebaseAuthTypes } from '@react-native-firebase/auth';
 
 // Vistas
 import VistaHome from '@/app/views/VistaHome';
 import VistaAbonoRetiro from '@/app/views/VistasBudaApi/VistaAbonoRetiro';
 import VistaVolumenDeMercado from '@/app/views/VistasBudaApi/VistaVolumenMercado';
-import VistaHomeBuda from '@/app/views/VistasBudaApi/VistaHomeBuda';
 import VistaEstadoMercado from '@/app/views/VistasBudaApi/VistaEstadoMercado';
 import VistaPerfil from '@/app/views/VistaPerfil/Perfil';
 import Login from '@/app/views/VistasAuth/Login';
 import Registro from '@/app/views/VistasAuth/Registro';
+import Contacto from './views/Contacto';
 
-import VistaIndicador from './views/VistasIndicadoresApi/VistaIndicadores';
+import { authFirebase, analyticsFirebase } from '@/database/firebase';
+import VistaIndicadores from './views/VistasIndicadoresApi/VistaIndicadores';
 import VistaTipoIndicador from './views/VistasIndicadoresApi/VistaTipoIndicador';
 import VistaFechaTipoIndicador from './views/VistasIndicadoresApi/VistaFechaTipoIndicador';
-import VistaAnioTipoIndicador from './views/VistasIndicadoresApi/VistaAnioTipoIndicador';
-import VistaHomeIndicadores from './views/VistasIndicadoresApi/VistaHomeIndicadores';
-import VistaIndicadores from './views/VistasIndicadoresApi/VistaIndicadores';
-import { SafeAreaFrameContext } from 'react-native-safe-area-context';
+import VistaAnioTipoIndicador from './views/VistasIndicadoresApi/VistaAñoTipoIndicador';
+import RestablecerPassword from './views/VistasAuth/RestablecerPassword';
 
 const Stack = createStackNavigator();
-const AuthStack = createStackNavigator();
 const HomeStack = createStackNavigator();
-const HomeBudaStack = createStackNavigator();
-const IndicadorStack = createStackNavigator();
 const MenuStack = createStackNavigator();
 const Tab = createBottomTabNavigator();
+const ContactStack = createStackNavigator();
+
+const auth = authFirebase;
+const analytics = analyticsFirebase;
 
 const HomeStackScreen = () => (
     <HomeStack.Navigator
@@ -51,123 +50,46 @@ const HomeStackScreen = () => (
             },
             headerTintColor: '#fff', // Color del texto del encabezado
             headerTitleStyle: {
-                fontWeight: 'bold', // Estilo del título del encabezado
+                fontWeight: 'bold',
+                fontSize: 22,
             },
-            })}
+            headerTitleAlign: 'center',
+        })}
     >
         <HomeStack.Screen name="Home" component={VistaHome} />
-        <HomeStack.Screen name="Buda" component={VistaHomeBuda} />
-        <HomeStack.Screen name="Indicadores" component={VistaHomeIndicadores} />
+        <HomeStack.Screen name="Estado Mercado" component={VistaEstadoMercado} />
+        <HomeStack.Screen name="Abonos y Retiros" component={VistaAbonoRetiro} />
+        <HomeStack.Screen name="Volumen Mercado" component={VistaVolumenDeMercado} />
+        <HomeStack.Screen name="Indicadores" component={VistaIndicadores} />
+        <HomeStack.Screen name="Tipo Indicador" component={VistaTipoIndicador} />
+        <HomeStack.Screen name="Fecha Tipo Indicador" component={VistaFechaTipoIndicador} />
+        <HomeStack.Screen name="Año Tipo Indicador" component={VistaAnioTipoIndicador} />
+        <HomeStack.Screen name="Restablecer" component={RestablecerPassword} />
     </HomeStack.Navigator>
 );
 
-const HomeBudaStackScreen = () => (
-    <HomeBudaStack.Navigator 
+const ContactStackScreen = () => (
+    <ContactStack.Navigator
         screenOptions={({ navigation }) => ({
-        headerStyle: {
-            backgroundColor: '#0e7490',
-            height: 140,
-            borderWidth: 0,
-            elevation: 0,
-            shadowOpacity: 0,
+            headerStyle: {
+                backgroundColor: '#0e7490',
+                height: 140,
+                borderWidth: 0,
+                elevation: 0,
+                shadowOpacity: 0,
 
-        },
-        headerTintColor: '#fff', // Color del texto del encabezado
-        headerTitleStyle: {
-            fontWeight: 'bold', // Estilo del título del encabezado
-        },
-        headerLeft: () => (
-            <TouchableOpacity
-                onPress={() => navigation.goBack()}>
-            <HeaderBackButton 
-                tintColor="#fff" // Color del botón de retroceso
-                style={styles.buttonContainer} 
-            />
-            </TouchableOpacity>
-        ),
+            },
+            headerTintColor: '#fff', // Color del texto del encabezado
+            headerTitleStyle: {
+                fontWeight: 'bold', // Estilo del título del encabezado
+            },
+            headerTitleAlign: 'center',
+            
         })}
     >
-        <HomeBudaStack.Screen 
-            name="Estado Mercado" 
-            component={VistaEstadoMercado}
-            options={{
-                title: 'Estado Mercado',
-            }}
-        />
-        <HomeBudaStack.Screen 
-            name="Abonos y Retiros" 
-            component={VistaAbonoRetiro}
-            options={{
-                title: 'Abonos y Retiros',
-            }}
-        />
-        <HomeBudaStack.Screen 
-            name="Volumen Mercado" 
-            component={VistaVolumenDeMercado} 
-            options={{
-                title: 'Volumen Mercado',
-            }}
-        />
-    </HomeBudaStack.Navigator>
+        <ContactStack.Screen name="Contacto" component={Contacto}/>
+    </ContactStack.Navigator>
 );
-
-const IndicadorStackScreen = () => {
-    <IndicadorStack.Navigator 
-        screenOptions={({ navigation }) => ({
-        headerStyle: {
-            backgroundColor: '#0e7490',
-            height: 140,
-            borderWidth: 0,
-            elevation: 0,
-            shadowOpacity: 0,
-
-        },
-        headerTintColor: '#fff', // Color del texto del encabezado
-        headerTitleStyle: {
-            fontWeight: 'bold', // Estilo del título del encabezado
-        },
-        headerLeft: () => (
-            <TouchableOpacity
-                onPress={() => navigation.goBack()}>
-            <HeaderBackButton 
-                tintColor="#fff" // Color del botón de retroceso
-                style={styles.buttonContainer} 
-            />
-            </TouchableOpacity>
-        ),
-        })}
-    >
-        <IndicadorStack.Screen
-            name="Indicadores" 
-            component={VistaIndicadores} 
-            options={{
-                title: 'Indicadores',
-            }}
-        />
-        <IndicadorStack.Screen
-            name="Tipo Indicador" 
-            component={VistaTipoIndicador} 
-            options={{
-                title: 'Tipo Indicadores',
-            }}
-        />
-        <IndicadorStack.Screen
-            name="Tipo Indicador Fecha" 
-            component={VistaFechaTipoIndicador} 
-            options={{
-                title: 'Tipo Indicador Por Fecha',
-            }}
-        />
-        <IndicadorStack.Screen
-            name="Tipo Indicador Año" 
-            component={VistaAnioTipoIndicador}
-            options={{
-                title: 'Tipo Indicador Por Año',
-            }}
-        />
-
-    </IndicadorStack.Navigator>
-}
 
 const MenuStackScreen = () => (
     <MenuStack.Navigator
@@ -178,21 +100,21 @@ const MenuStackScreen = () => (
             borderWidth: 0,
             elevation: 0,
             shadowOpacity: 0,
-
-        },
-        headerTintColor: '#fff', // Color del texto del encabezado
-        headerTitleStyle: {
-            fontWeight: 'bold', // Estilo del título del encabezado
-        },
-        headerLeft: () => (
-            <TouchableOpacity
-            onPress={() => navigation.goBack()}>
-            <HeaderBackButton 
-                tintColor="#fff" // Color del botón de retroceso
-                style={styles.buttonContainer} 
-            />
-            </TouchableOpacity>
-        ),
+            },
+            headerTintColor: '#fff', // Color del texto del encabezado
+            headerTitleStyle: {
+                fontWeight: 'bold', // Estilo del título del encabezado
+            },
+            headerTitleAlign: 'center',
+            headerLeft: () => (
+                <TouchableOpacity
+                onPress={() => navigation.goBack()}>
+                <HeaderBackButton 
+                    tintColor="#fff" // Color del botón de retroceso
+                    style={styles.buttonContainer} 
+                />
+                </TouchableOpacity>
+            ),
         })}
     >
     <MenuStack.Screen 
@@ -205,20 +127,26 @@ const MenuStackScreen = () => (
     </MenuStack.Navigator>
 );
 
-const TabNavigator = () => {
+const TabNavigator = ({navigation}: any) => {
     const colorScheme = useColorScheme();
+
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', async () => {
+        });
+
+        return unsubscribe;
+    }, [navigation]);
+    
     return (
     <Tab.Navigator
         screenOptions={{
             tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
             headerShown: false,
             tabBarStyle: {
-            height: 99,
-            width: '100%',
-            position: 'absolute',
-            borderColor: '#D9D9D9',
-            backgroundColor: '#000e21',
-            paddingTop: 20
+                height: 90,
+                width: '100%',
+                position: 'absolute',
+                backgroundColor: '#000e21',
         },
     }}
     >
@@ -233,15 +161,19 @@ const TabNavigator = () => {
             }} 
         />
         <Tab.Screen 
-            name="HomeBuda" 
-            component={HomeBudaStackScreen} 
+            name="Contacto" 
+            component={ContactStackScreen}
             options={{
             tabBarShowLabel: false,
             tabBarIcon: ({ color, focused }) => (
-                <TabBarIcon name={focused ? 'search' : 'search-outline'} color='#dbeafe' />
+                <TabBarIcon 
+                    name={focused ? 'mail' : 'mail-outline'} 
+                    color='#dbeafe'
+                />
             ),
             }} 
         />
+        
         <Tab.Screen 
             name="Perfil" 
             component={MenuStackScreen}
@@ -259,15 +191,16 @@ const TabNavigator = () => {
 
 export default function App() {
 
-    const auth = authFirebase;
-    const [user, setUser] = useState<User | null>(null);
+    const [user, setUser] = useState<FirebaseAuthTypes.User | null>(null);
 
     useEffect(() => {
-        onAuthStateChanged(auth, (user) => {
+        const unsubscribe = authFirebase.onAuthStateChanged((user) => {
             console.log('user ', user); // Verifica si el usuario está siendo detectado aquí
             setUser(user);
         });
     
+        // Limpia el suscriptor cuando el componente se desmonta
+        return unsubscribe;
     }, []);
 
     return (
@@ -276,10 +209,11 @@ export default function App() {
             {user ? (
                 <Stack.Screen name='Home' component={TabNavigator} options={{ headerShown: false }}/>
             ) : (
-                <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
+                <><Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
+                <Stack.Screen name="Registro" component={Registro} options={{ headerShown: false }} /></>
             )}
         </Stack.Navigator>
-    
+        
     </NativeBaseProvider>
     );
 }

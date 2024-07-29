@@ -1,124 +1,99 @@
-import { useState } from 'react';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { StyleSheet, Image, TextInput, Alert, ScrollView, ActivityIndicator, View, Text } from 'react-native';
-import { Button, Center, Input } from "native-base";
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { StyleSheet, Image, TextInput, Alert, ScrollView, ActivityIndicator, View, Text } from 'react-native';
+
+import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-
+import { useState } from 'react';
+import { Button, Center, Input } from "native-base";
+// import crashlytics from '@react-native-firebase/crashlytics';
 
 // Dependencia Firestore
-import TableModal from '@/components/ModalComponent';
-import { db } from '@/database/firebase';
+import { db, analyticsFirebase } from '@/database/firebase';
+import TableModal from '@/components/Modals/ModalTipoIndicador';
+import React from 'react';
 
-const Table = ({ data }: any) => {
-    const tableData = Object.entries(data.fee);
+export default function VistaTipoIndicador() {
 
-    const renderItem = ({ item }: any) => (
-        <View style={styles.row}>
-            <Text style={styles.cell}>{item[0]}</Text>
-            <Text style={styles.cell}>{Array.isArray(item[1]) ? item[1].join(' ') : item[1]}</Text>
-        </View>
-    );
+    const analytics = analyticsFirebase;
 
-    return (
-        <View>
-            {tableData.map((item, index) => renderItem({ item, index }))}
-        </View>
-    );
-};
-
-const VistaTipoIndicador = (): any => {
-
-    const [tipoIndicador, setTipoIndicador] = useState<any>(null);
-    const [apiData, setApiData] = useState<any>(null);
+    const [tipoIndicador, setTipoIndicador] = useState('');
+    const [apiData, setApiData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
 
-    const fetchDataApiInd = async (tipoIndicador: string) => {
-        try {
-            const response = await fetch(`https://mindicador.cl/api/${tipoIndicador}`);
-            if (!response.ok) {
-                throw new Error('No hay respuesta de Indicador Economico API');
-            }
-            const data = await response.json();
-            console.log(data);
-            return data;
-        } catch (error) {
-            console.error(error);
-            Alert.alert('Error', 'Error al consultar Indicador Economico API');
+    const fetchDataFromApi = async (tipoIndicador: string) => {
+    try {
+        const response = await fetch(`http://192.168.1.85:8080/api/consultar-tipo/${tipoIndicador}`);
+        if (!response.ok) {
+            throw new Error('No hay respuesta de API');
         }
-    };
+        const data = await response.json();
+        // Mostrar data de consulta a API de BUDA
+        console.log(data)
+        return data;
+    } catch (error) {
+        console.error(error);
+        Alert.alert('Error', 'Error al consultar API');
+    }
+}
 
-    const saveDataToFirestore = async (data: any) => {
-        try {
-            await db.collection('IndEconomicoDiario').add(data);
-        } catch (error) {
-            await db.collection('IndEconomicoDiarioError').add(data);
-            console.error('Error saving data to Firestore: ', error);
-            Alert.alert('Error', 'Failed to save data to Firestore');
-        }
-    };
+const handleApiAndFirestore = async () => {
+    setLoading(true);
+    // Se espera la respuesta de data al ingresar la currency
+    const data = await fetchDataFromApi(tipoIndicador);
+    if (data) {
+        // Almacenamos la data en setApiData
+        setApiData(data);
+        setModalVisible(true);
+    }
+    setLoading(false);
+};
 
-    const handleApiAndFirestore = async () => {
-        setLoading(true);
-        const data = await fetchDataApiInd(tipoIndicador);
-        if (data) {
-            setApiData(data);
-            await saveDataToFirestore(data);
-            setModalVisible(true);
-        }
-        setLoading(false);
-    
     return (
-        <ParallaxScrollView
-            headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-            headerImage={
-            <Image
-                source={require('@/assets/images/partial-react-logo.png')}
-                style={styles.reactLogo}
-            />
-            }>
-            <ThemedView style={styles.titleContainer}>
-            <ThemedText type="title">Consulta Estado Mercado</ThemedText>
-            </ThemedView>
-            <ThemedView>
+    <ParallaxScrollView
+        headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
+        headerImage={<Ionicons size={250} name="code-slash" style={styles.headerImage} />}>
+        <ThemedView style={styles.titleContainer}>
+            <ThemedText type="title">Consultar Tipo Indicador</ThemedText>
+        </ThemedView>
+        <ThemedText>Entrega los valores del último mes del indicador consultado.</ThemedText>
+        <ThemedView>
             <Input 
                 size="lg" 
                 variant="outline" 
                 placeholder="Ingrese consulta" 
                 mt={3}
+                value={tipoIndicador}
+                onChangeText={setTipoIndicador}
             />
-            </ThemedView>
-            <ThemedView>
-            <Center>
+        </ThemedView>
+        <Center>
                 <Button 
-                size="lg" 
-                variant="solid" 
-                w="80%" 
-                borderRadius={40}
-                onPress={handleApiAndFirestore}>
-                    Buscar
+                    size="lg" 
+                    variant="solid" 
+                    w="80%" 
+                    borderRadius={40}
+                    marginTop={5}
+                    onPress={handleApiAndFirestore}>
+                    Consultar
                 </Button>
             </Center>
-            </ThemedView>
-            <ScrollView>
+        <ScrollView>
             {loading && <ActivityIndicator size="large" color="#0000ff" />}
             {apiData && (
                 <TableModal isOpen={modalVisible} onClose={() => setModalVisible(false)} data={apiData} />
             )}
-            </ScrollView>
-        </ParallaxScrollView>
-
-    )};
+        </ScrollView>
+    </ParallaxScrollView>
+    );
 }
-
 
 const styles = StyleSheet.create({
     headerImage: {
         color: '#808080',
-        bottom: -90,
-        left: -35,
+        bottom: -30,
+        left: -10,
         position: 'absolute',
     },
     container: {
@@ -179,6 +154,3 @@ const styles = StyleSheet.create({
     },
     
 });
-
-
-export default VistaTipoIndicador;

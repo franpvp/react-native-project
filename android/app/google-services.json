@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "535682666753",
+    "project_id": "react-project-2da93",
+    "storage_bucket": "react-project-2da93.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:535682666753:android:005d4d73cd8c920b110b00",
+        "android_client_info": {
+          "package_name": "com.banchile.reactProject"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDRsap-11ic4Qcjjb248Yh6fhyPFWENrqQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

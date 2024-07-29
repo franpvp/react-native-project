@@ -32,7 +32,7 @@ const TableModal: React.FC<TableModalProps> = ({ isOpen, onClose, data }) => {
         <Modal isOpen={isOpen} onClose={onClose}>
             <Modal.Content maxWidth="400px">
                 <Modal.CloseButton />
-                <Modal.Header>Detalles</Modal.Header>
+                <Modal.Header>Detalles Costos y Retiros</Modal.Header>
                 <Modal.Body>
                     <FlatList
                         data={costosData}

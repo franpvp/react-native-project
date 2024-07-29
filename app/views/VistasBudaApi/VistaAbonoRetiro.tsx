@@ -10,7 +10,8 @@ import { Button, Center, Input } from "native-base";
 
 // Dependencia Firestore
 import { db } from '@/database/firebase';
-import TableModal from '@/components/ModalAbonosRetiros';
+import TableModal from '@/components/Modals/ModalAbonosRetiros';
+import React from 'react';
 
 
 export default function VistaAbonoRetiro() {
@@ -26,15 +27,8 @@ export default function VistaAbonoRetiro() {
   // Ejemplo para currency = 'btc' y para transaction_type = 'withdrawal'
   const fetchDataFromApiAR = async (currency: string, transactionType: string) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/consultar-costos/${currency}/${transactionType}`);
+      const response = await fetch(`http://192.168.1.85:8080/api/consultar-costos/${currency}/${transactionType}`);
       if (!response.ok) {
-        const data = await response.json();
-        // Aqui guardar error Crashlytics
-        // crashlytics().setAttribute('currency', currency);
-        // crashlytics().setAttribute('transactionType', transactionType);
-        // crashlytics().log('API response not OK');
-        // crashlytics().recordError(new Error(`API error: ${data}`));
-        // Guardar Json
         throw new Error('No hay respuesta de API');
       }
       const data = await response.json();
