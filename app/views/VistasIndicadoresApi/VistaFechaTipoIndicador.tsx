@@ -26,7 +26,7 @@ export default function VistaFechaTipoIndicador() {
 
     const fetchDataFromApi = async (tipoIndicador: string, fecha: string) => {
     try {
-        const response = await fetch(`http://192.168.1.85:8080/api/consultar-tipo-fecha/${tipoIndicador}/${fecha}`);
+        const response = await fetch(`http://10.200.82.184:8080/api/consultar-tipo-fecha/${tipoIndicador}/${fecha}`);
         if (!response.ok) {
             throw new Error('No hay respuesta de API');
         }

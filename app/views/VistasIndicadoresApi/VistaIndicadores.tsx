@@ -21,20 +21,18 @@ export default function VistaIndicadores() {
 
     const analytics = analyticsFirebase;
 
-    // Realizar solicitud get a API Costos de abonos/retiros
-    // Ejemplo para currency = 'btc' y para transaction_type = 'withdrawal'
     const fetchDataApiIndicadores = async () => {
     try {
-        const response = await fetch(`http://192.168.1.85:8080/api/consultar-indicadores`);
+        const response = await fetch(`http://10.200.82.184:8080/api/consultar-indicadores`);
         if (!response.ok) {
             throw new Error('No hay respuesta de API');
         }
         const data = await response.json();
-        // Mostrar data de consulta a API de BUDA
         console.log(data)
         return data;
     } catch (error) {
         console.error(error);
+        // Agregar crash de Crashlytics 
         Alert.alert('Error', 'Error al consultar API');
     }
 }

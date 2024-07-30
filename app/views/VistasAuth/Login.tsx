@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Center, Text } from "native-base";
-import { View, StyleSheet, TouchableOpacity, ScrollView, TextInput } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, ScrollView, TextInput, Pressable } from 'react-native';
 import { authFirebase } from "@/database/firebase";
 import { ActivityIndicator, useTheme } from 'react-native-paper';
 import { analyticsFirebase } from "@/database/firebase";
@@ -55,7 +55,7 @@ const Login = ( {navigation}: any ) => {
         <View style={styles.container}>
             <ScrollView contentContainerStyle={styles.scrollViewContent} showsVerticalScrollIndicator={false}>
                 <View style={styles.innerContainer}>
-                    <Text style={styles.titleLogin} paddingTop={10} paddingBottom={10}>Inicia Sesión</Text>
+                    <Text style={styles.titleLogin} paddingTop={10} paddingBottom={10}>Iniciar Sesión</Text>
                 </View>
                 <View>
                     <Text style={styles.label}>Email</Text>
@@ -79,8 +79,13 @@ const Login = ( {navigation}: any ) => {
                             secureTextEntry={true}
                             style={styles.input}
                         ></TextInput>
-                        <Text style={styles.restText} marginBottom={5}>Restablecer contraseña</Text>
+                        
                     </Center>
+                    <Pressable
+                        onPress={() => navigation.navigate("Restablecer")}
+                    >
+                            <Text style={styles.restText} marginBottom={5}>Restablecer contraseña</Text>
+                    </Pressable>
                 </View>
                 <Center>
                     { loading ? (
@@ -170,7 +175,8 @@ const styles = StyleSheet.create({
     restText: {
         color: '#e0f2fe',
         fontWeight: '700',
-        fontSize: 14
+        fontSize: 14,
+        textAlign: 'center',
     },
     scrollView: {
         flex: 1,

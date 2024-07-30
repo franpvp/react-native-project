@@ -11,10 +11,30 @@ import { ref, getDownloadURL  } from 'firebase/storage';
 export default function Perfil({ navigation }) {
   const [user, setUser] = useState(null);
   const [image, setImage] = useState(null);
+  const [phone, setPhone] = useState('');
   const [transferred, setTransferred] = useState('');
   const auth = authFirebase;
   const storage = storageFirebase;
   const userAuth = auth.currentUser;
+
+  if (userAuth) {
+    const uidUser = userAuth.uid;
+  
+    db.collection('usuarios').doc(uidUser).get()
+      .then((doc) => {
+        if (doc.exists) {
+          const phone = doc.data().phoneNumber;
+          setPhone(phone);
+        } else {
+          console.log('No such document!');
+        }
+      })
+      .catch((error) => {
+        console.error('Error getting document:', error);
+      });
+  } else {
+    console.log('User not authenticated');
+  }
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -64,7 +84,7 @@ export default function Perfil({ navigation }) {
         photoURL: url
       });
       await fetchPhotoURL(userAuth.uid);
-      Alert.alert("Imagen guardada", "La imagen se guardó correctamente");
+      // Alert.alert("Imagen guardada", "La imagen se guardó correctamente");
     } catch (error) {
       console.error("Error guardando imagen: ", error.message);
       // Alert.alert("Error", "Error guardando imagen: " + error.message);
@@ -142,7 +162,7 @@ export default function Perfil({ navigation }) {
             <Box alignSelf="center" w="85%" padding={5} paddingLeft={10} paddingRight={10} bg="muted.200" borderRadius={10}>
               <Box flexDirection="row" justifyContent="space-between" alignItems="center">
                 <Text style={styles.label}>Teléfono</Text>
-                <Text style={styles.email}>{userAuth.phoneNumber}</Text>
+                <Text style={styles.email}>{phone}</Text>
               </Box>
             </Box>
             <Pressable
@@ -158,6 +178,7 @@ export default function Perfil({ navigation }) {
             </Pressable>
             <View style={styles.inputContainer}>
               <TouchableOpacity onPress={() => auth.signOut()} style={styles.logoutButton}>
+                <Ionicons name="log-out-outline" size={24} color="white" style={styles.icon} />
                 <Text style={styles.textButton}>Cerrar Sesión</Text>
               </TouchableOpacity>
             </View>
@@ -203,14 +224,14 @@ const styles = StyleSheet.create({
     left: 55
   },
   logoutButton: {
-    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#ff6347', 
     padding: 15,
     paddingLeft: 40,
     paddingRight: 40,
-    marginTop: 40,
-    justifyContent: 'center',
-    backgroundColor: '#dc2626',
-    borderRadius: 30,
+    borderRadius: 40,
+    marginTop: 40
   },
   textButton: {
     fontSize: 16,
@@ -224,4 +245,7 @@ const styles = StyleSheet.create({
     color: '#000',
     textAlign: 'right',
   },
+  icon: {
+    marginRight: 10,
+  }
 });

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import 'react-native-gesture-handler';
 import { NativeBaseProvider, extendTheme } from 'native-base';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
-import { useColorScheme, StyleSheet } from 'react-native';
+import { useColorScheme, StyleSheet, LogBox } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import { HeaderBackButton } from '@react-navigation/elements';
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -30,16 +30,17 @@ import RestablecerPassword from './views/VistasAuth/RestablecerPassword';
 
 const Stack = createStackNavigator();
 const HomeStack = createStackNavigator();
-const MenuStack = createStackNavigator();
+const PerfilStack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 const ContactStack = createStackNavigator();
 
 const auth = authFirebase;
 const analytics = analyticsFirebase;
 
+
 const HomeStackScreen = () => (
     <HomeStack.Navigator
-        screenOptions={({ navigation }) => ({
+        screenOptions={() => ({
             headerStyle: {
                 backgroundColor: '#0e7490',
                 height: 140,
@@ -64,6 +65,7 @@ const HomeStackScreen = () => (
         <HomeStack.Screen name="Tipo Indicador" component={VistaTipoIndicador} />
         <HomeStack.Screen name="Fecha Tipo Indicador" component={VistaFechaTipoIndicador} />
         <HomeStack.Screen name="Año Tipo Indicador" component={VistaAnioTipoIndicador} />
+        <HomeStack.Screen name="Contacto" component={Contacto} />
         <HomeStack.Screen name="Restablecer" component={RestablecerPassword} />
     </HomeStack.Navigator>
 );
@@ -84,6 +86,15 @@ const ContactStackScreen = () => (
                 fontWeight: 'bold', // Estilo del título del encabezado
             },
             headerTitleAlign: 'center',
+            headerLeft: () => (
+                <TouchableOpacity
+                onPress={() => navigation.goBack()}>
+                <HeaderBackButton 
+                    tintColor="#fff" // Color del botón de retroceso
+                    style={styles.buttonContainer} 
+                />
+                </TouchableOpacity>
+            ),
             
         })}
     >
@@ -91,8 +102,8 @@ const ContactStackScreen = () => (
     </ContactStack.Navigator>
 );
 
-const MenuStackScreen = () => (
-    <MenuStack.Navigator
+const PerfilStackScreen = () => (
+    <PerfilStack.Navigator
         screenOptions={({ navigation }) => ({
         headerStyle: {
             backgroundColor: '#0e7490',
@@ -117,14 +128,14 @@ const MenuStackScreen = () => (
             ),
         })}
     >
-    <MenuStack.Screen 
+    <PerfilStack.Screen 
         name="Perfil" 
         component={VistaPerfil}
         options={{
             title: 'Mi Perfil',
         }}
     />
-    </MenuStack.Navigator>
+    </PerfilStack.Navigator>
 );
 
 const TabNavigator = ({navigation}: any) => {
@@ -151,7 +162,7 @@ const TabNavigator = ({navigation}: any) => {
     }}
     >
         <Tab.Screen 
-            name="Home" 
+            name="HomeTab" 
             component={HomeStackScreen} 
             options={{
             tabBarShowLabel: false,
@@ -161,13 +172,13 @@ const TabNavigator = ({navigation}: any) => {
             }} 
         />
         <Tab.Screen 
-            name="Contacto" 
+            name="ContactoTab" 
             component={ContactStackScreen}
             options={{
             tabBarShowLabel: false,
             tabBarIcon: ({ color, focused }) => (
                 <TabBarIcon 
-                    name={focused ? 'mail' : 'mail-outline'} 
+                    name={focused ? 'paper-plane' : 'paper-plane-outline'} 
                     color='#dbeafe'
                 />
             ),
@@ -175,13 +186,13 @@ const TabNavigator = ({navigation}: any) => {
         />
         
         <Tab.Screen 
-            name="Perfil" 
-            component={MenuStackScreen}
+            name="PerfilTab" 
+            component={PerfilStackScreen}
             options={{
             tabBarShowLabel: false,
-            tabBarIcon: ({ color, focused }) => (
-                <TabBarIcon name={focused ? 'person-circle' : 'person-circle-outline'} color='#dbeafe' />
-            ),
+                tabBarIcon: ({ color, focused }) => (
+                    <TabBarIcon name={focused ? 'person-circle' : 'person-circle-outline'} color='#dbeafe' />
+                ),
             }} 
         />
     </Tab.Navigator>
@@ -203,6 +214,10 @@ export default function App() {
         return unsubscribe;
     }, []);
 
+    useEffect(() => {
+        LogBox.ignoreLogs(['In React 18, SSRProvider is not necessary and is a noop. You can remove it from your app.']);
+    }, []);
+
     return (
     <NativeBaseProvider>
         <Stack.Navigator initialRouteName='Login'>
@@ -210,7 +225,9 @@ export default function App() {
                 <Stack.Screen name='Home' component={TabNavigator} options={{ headerShown: false }}/>
             ) : (
                 <><Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
-                <Stack.Screen name="Registro" component={Registro} options={{ headerShown: false }} /></>
+                <Stack.Screen name="Registro" component={Registro} options={{ headerShown: false }} />
+                <Stack.Screen name="Restablecer" component={RestablecerPassword} options={{ headerShown: false }} /></>
+                
             )}
         </Stack.Navigator>
         

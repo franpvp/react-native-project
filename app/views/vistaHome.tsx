@@ -40,7 +40,7 @@ export default function VistaHome({ navigation }: any) {
                   onPress={() => navigation.navigate("Indicadores")}
                 >
                   <Box style={styles.firstBox}>
-                    <Ionicons name="stats-chart" size={24} color="white" style={styles.icon} />
+                    <Ionicons name="cash" size={24} color="white" style={styles.icon} />
                     <Text fontSize="lg" color="white" fontWeight={600}>Indicadores</Text>
                   </Box>
                 </Pressable>
@@ -91,7 +91,7 @@ export default function VistaHome({ navigation }: any) {
                   onPress={() => navigation.navigate("Estado Mercado")}
                 >
                   <Box style={styles.firstBox}>
-                    <Ionicons name="stats-chart" size={24} color="white" style={styles.icon} />
+                    <Ionicons name="analytics-outline" size={24} color="white" style={styles.icon} />
                     <Text fontSize="lg" color="white" fontWeight={600}>Estado Mercado</Text>
                   </Box>
                 </Pressable>
@@ -99,7 +99,7 @@ export default function VistaHome({ navigation }: any) {
                   onPress={() => navigation.navigate("Abonos y Retiros")}
                 >
                   <Box style={styles.secondBox}>
-                    <Ionicons name="cash-outline" size={24} color="white" style={styles.icon} />
+                    <Ionicons name="swap-horizontal-outline" size={24} color="white" style={styles.icon} />
                     <Text fontSize="lg" color="white" fontWeight={600}>Costos Abonos y Retiros</Text>
                   </Box>
                 </Pressable>

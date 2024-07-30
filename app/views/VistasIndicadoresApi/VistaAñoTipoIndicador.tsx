@@ -27,7 +27,7 @@ export default function VistaAñoTipoIndicador() {
     // Ejemplo para currency = 'btc' y para transaction_type = 'withdrawal'
     const fetchDataFromApi = async (tipoIndicador: string, anio: string) => {
     try {
-        const response = await fetch(`http://192.168.1.85:8080/api/consultar-tipo-año/${tipoIndicador}/${anio}`);
+        const response = await fetch(`http://10.200.82.184:8080/api/consultar-tipo-año/${tipoIndicador}/${anio}`);
         if (!response.ok) {
             throw new Error('No hay respuesta de API');
         }

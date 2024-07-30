@@ -27,7 +27,7 @@ export default function VistaAbonoRetiro() {
   // Ejemplo para currency = 'btc' y para transaction_type = 'withdrawal'
   const fetchDataFromApiAR = async (currency: string, transactionType: string) => {
     try {
-      const response = await fetch(`http://192.168.1.85:8080/api/consultar-costos/${currency}/${transactionType}`);
+      const response = await fetch(`http://10.200.82.184:8080/api/consultar-costos/${currency}/${transactionType}`);
       if (!response.ok) {
         throw new Error('No hay respuesta de API');
       }

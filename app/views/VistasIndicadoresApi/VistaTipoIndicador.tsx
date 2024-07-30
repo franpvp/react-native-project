@@ -1,5 +1,7 @@
+import React from 'react';
+import { LineChart } from 'react-native-chart-kit';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { StyleSheet, Image, TextInput, Alert, ScrollView, ActivityIndicator, View, Text } from 'react-native';
+import { StyleSheet, Dimensions, Image, TextInput, Alert, ScrollView, ActivityIndicator, View, Text } from 'react-native';
 
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
@@ -11,7 +13,7 @@ import { Button, Center, Input } from "native-base";
 // Dependencia Firestore
 import { db, analyticsFirebase } from '@/database/firebase';
 import TableModal from '@/components/Modals/ModalTipoIndicador';
-import React from 'react';
+
 
 export default function VistaTipoIndicador() {
 
@@ -24,12 +26,12 @@ export default function VistaTipoIndicador() {
 
     const fetchDataFromApi = async (tipoIndicador: string) => {
     try {
-        const response = await fetch(`http://192.168.1.85:8080/api/consultar-tipo/${tipoIndicador}`);
+        const response = await fetch(`http://10.200.82.184:8080/api/consultar-tipo/${tipoIndicador}`);
         if (!response.ok) {
             throw new Error('No hay respuesta de API');
         }
         const data = await response.json();
-        // Mostrar data de consulta a API de BUDA
+        
         console.log(data)
         return data;
     } catch (error) {
@@ -38,22 +40,82 @@ export default function VistaTipoIndicador() {
     }
 }
 
-const handleApiAndFirestore = async () => {
-    setLoading(true);
-    // Se espera la respuesta de data al ingresar la currency
-    const data = await fetchDataFromApi(tipoIndicador);
-    if (data) {
-        // Almacenamos la data en setApiData
-        setApiData(data);
-        setModalVisible(true);
-    }
-    setLoading(false);
-};
+    const handleApiAndFirestore = async () => {
+        setLoading(true);
+        // Se espera la respuesta de data al ingresar la currency
+        const data = await fetchDataFromApi(tipoIndicador);
+        if (data) {
+            // Almacenamos la data en setApiData
+            setApiData(data);
+            setModalVisible(true);
+        }
+        setLoading(false);
+    };
+
+    const ChartComponent = ({ data }: any) => {
+        const chartData = data.serie.map((item: { fecha: string | number | Date; valor: any; }) => ({
+            date: new Date(item.fecha),
+            value: item.valor
+        }));
+
+        chartData.sort((a: { date: number; }, b: { date: number; }) => a.date - b.date);
+
+        const values = chartData.map((item: { value: any; }) => item.value);
+        const labels = chartData.map((item: { date: { toLocaleDateString: () => any; }; }) => item.date.toLocaleDateString());
+
+        return (
+            <View>
+                <ScrollView showsHorizontalScrollIndicator={false}>
+                    <Text>Gráfica de Unidad de Fomento (UF)</Text>
+                    <LineChart
+                        data={{
+                            labels: labels,
+                            datasets: [
+                                {
+                                    data: values
+                                }
+                            ]
+                        }}
+                        width={Dimensions.get('window').width - 70}
+                        height={450}
+                        yAxisLabel="$"
+                        yAxisSuffix=""
+                        yAxisInterval={1}
+                        chartConfig={{
+                            backgroundColor: "#000e21",
+                            backgroundGradientFrom: "#fb8c00",
+                            backgroundGradientTo: "#ffa726",
+                            decimalPlaces: 0,
+                            color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+                            labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+                            style: {
+                                borderRadius: 16,
+                            },
+                            propsForDots: {
+                                r: "6",
+                                strokeWidth: "2",
+                                stroke: "#ffa726"
+                            }
+                        }}
+                        bezier
+                        style={{
+                            marginVertical: 8,
+                            borderRadius: 16
+                        }}
+                    />
+                </ScrollView>
+                
+            </View>
+        );
+    };
 
     return (
     <ParallaxScrollView
         headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
         headerImage={<Ionicons size={250} name="code-slash" style={styles.headerImage} />}>
+            <ScrollView showsHorizontalScrollIndicator={false}>
+                
+            </ScrollView>
         <ThemedView style={styles.titleContainer}>
             <ThemedText type="title">Consultar Tipo Indicador</ThemedText>
         </ThemedView>
@@ -69,20 +131,23 @@ const handleApiAndFirestore = async () => {
             />
         </ThemedView>
         <Center>
-                <Button 
-                    size="lg" 
-                    variant="solid" 
-                    w="80%" 
-                    borderRadius={40}
-                    marginTop={5}
-                    onPress={handleApiAndFirestore}>
-                    Consultar
-                </Button>
-            </Center>
-        <ScrollView>
+            <Button 
+                size="lg" 
+                variant="solid" 
+                w="80%" 
+                borderRadius={40}
+                marginTop={5}
+                onPress={handleApiAndFirestore}>
+                Consultar
+            </Button>
+        </Center>
+        <ScrollView style={{marginBottom: 100}}>
             {loading && <ActivityIndicator size="large" color="#0000ff" />}
             {apiData && (
+                <>
                 <TableModal isOpen={modalVisible} onClose={() => setModalVisible(false)} data={apiData} />
+                <ChartComponent data={apiData}/>
+                </>
             )}
         </ScrollView>
     </ParallaxScrollView>

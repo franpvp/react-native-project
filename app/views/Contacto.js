@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Center, Avatar, Text, Box, Button, VStack } from "native-base";
+import { Center, Avatar, Text, Box, Button, VStack, TextArea } from "native-base";
 import { View, StyleSheet, TouchableOpacity, ScrollView, Alert, TextInput, SafeAreaView, StatusBar } from 'react-native';
 import CustomInput from '@/components/CustomInput';
 import * as DocumentPicker from 'expo-document-picker';
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 import { db, authFirebase, storageFirebase } from "@/database/firebase"; 
 
@@ -106,22 +107,32 @@ export default function Contacto() {
         <ScrollView showsHorizontalScrollIndicator={false}>
             <VStack paddingBottom={10}>
                 <Box style={styles.containerLabel}>
-                    <CustomInput
-                        value={asunto}
-                        onChangeText={setAsunto}
-                        placeholder="Ingrese el asunto"
-                        style={styles.input}
-                    />
-                    <CustomInput
-                        value={mensaje}
-                        onChangeText={setMensaje}
-                        placeholder="Ingrese su mensaje"
-                        style={styles.input}
-                    />
+                    <View style={styles.containerContacto}>
+                        <Center>
+                            <TextInput
+                                value={asunto}
+                                onChangeText={setAsunto}
+                                placeholder="Asunto"
+                                autoCapitalize='none'
+                                style={styles.input}
+                            ></TextInput>
+                        </Center>
+                        <Center>
+                            <TextInput
+                                value={mensaje}
+                                onChangeText={setMensaje}
+                                placeholder="Mensaje"
+                                autoCapitalize='none'
+                                style={styles.input}
+                            ></TextInput>
+                        </Center>
+                    </View>
+                    
                 </Box>
                 <Box alignSelf="center" marginBottom='20px' marginTop={5}>
-                    <TouchableOpacity>
-                        <Button onPress={pickDocument} color='blue.700'>Subir archivo</Button>
+                    <TouchableOpacity onPress={pickDocument} style={styles.uploadButton}>
+                        <Ionicons name="cloud-upload-outline" size={24} color="white" style={styles.icon} />
+                        <Text style={styles.textButton}>Subir archivo</Text>
                     </TouchableOpacity>
                 </Box>
                 <Center>
@@ -139,20 +150,20 @@ const styles = StyleSheet.create({
     scrollView: {
         marginHorizontal: 20,
     },
+    containerContacto: {
+        marginTop: 50,
+    },
     inputContainer: {
         width: '100%',
         alignItems:'center'
     },
-    containerLabel: {
-        alignItems: 'center'
-    },
     label: {
-        fontSize: 25,
-        alignItems: 'center',
-        fontWeight: 400,
+        fontSize: 16,
         marginBottom: 5,
-        marginLeft: 5,
-        color: '#000',
+        marginLeft: 45,
+        color: 'black',
+        fontWeight: '500',
+        marginTop: 20
     },
     customInput: {
         justifyContent: 'center',
@@ -165,15 +176,14 @@ const styles = StyleSheet.create({
         color: 'gray',
     },
     input: {
-        justifyContent: 'center',
-        backgroundColor: '#e2e8f0',
-        borderColor: '#D9D9D9',
-        borderWidth: 0.5,
+        height: 45,
+        backgroundColor: 'white',
         borderRadius: 10,
-        marginTop: 40,
-        padding: 5,
-        width:'80%',
-        color: 'gray',
+        paddingHorizontal: 20,
+        marginBottom: 12,
+        fontSize: 16,
+        color: 'black',
+        width: '80%',
     },
     saveButton: {
         width: '80%',
@@ -201,7 +211,8 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontWeight: 'bold',
         alignItems: 'center',
-        textAlign: 'center'
+        textAlign: 'center',
+        fontSize: 16
     },
     logoutButton: {
         width: '100%',
@@ -216,5 +227,19 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         alignItems: 'center',
         textAlign: 'center',
-    }
+    },
+    uploadButton: {
+        flexDirection: 'row',
+        alignItems: 'center', 
+        backgroundColor: '#007BFF',
+        padding: 10,
+        borderRadius: 5, 
+    },
+        icon: {
+        marginRight: 10, 
+    },
+    textButton: {
+        color: 'white',
+        fontSize: 16, 
+    },
 });
