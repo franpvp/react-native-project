@@ -8,37 +8,46 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useState } from 'react';
 import { Button, Center, Input } from "native-base";
-// import crashlytics from '@react-native-firebase/crashlytics';
 
 // Dependencia Firestore
-import { db, analyticsFirebase } from '@/database/firebase';
+import { db, analyticsFirebase, crashlyticsFirebase } from '@/database/firebase';
 import TableModal from '@/components/Modals/ModalTipoIndicador';
 
 
 export default function VistaTipoIndicador() {
 
     const analytics = analyticsFirebase;
+    const crashlytics = crashlyticsFirebase;
 
     const [tipoIndicador, setTipoIndicador] = useState('');
     const [apiData, setApiData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
 
+    const nombreVistaActual = "VistaTipoIndicador";
+
     const fetchDataFromApi = async (tipoIndicador: string) => {
-    try {
-        const response = await fetch(`http://10.200.82.184:8080/api/consultar-tipo/${tipoIndicador}`);
-        if (!response.ok) {
-            throw new Error('No hay respuesta de API');
+        analytics.logEvent('screen_view', {
+            firebase_screen: nombreVistaActual,
+            mensaje: "Se hace click en botón Consultar"
+        })
+        crashlytics.log("Obteniendo data Vista Tipo Indicador")
+        try {
+            const response = await fetch(`http://10.200.82.184:8080/api/consultar-tipo/${tipoIndicador}`);
+            if (!response.ok) {
+                throw new Error('No hay respuesta de API');
+            }
+            const data = await response.json();
+            
+            console.log(data)
+            return data;
+        } catch (error: any) {
+            console.error(error);
+            // Crashlytics
+            crashlytics.recordError(error);
+            Alert.alert('Error', 'Error al consultar API');
         }
-        const data = await response.json();
-        
-        console.log(data)
-        return data;
-    } catch (error) {
-        console.error(error);
-        Alert.alert('Error', 'Error al consultar API');
     }
-}
 
     const handleApiAndFirestore = async () => {
         setLoading(true);
@@ -111,8 +120,13 @@ export default function VistaTipoIndicador() {
 
     return (
     <ParallaxScrollView
-        headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
-        headerImage={<Ionicons size={250} name="code-slash" style={styles.headerImage} />}>
+        headerBackgroundColor={{ light: '#3d3f58', dark: '#353636' }}
+        headerImage={
+            <Image
+                source={require('@/assets/images/ethLogo.png')}
+                style={styles.reactLogo}
+            />
+        }>
             <ScrollView showsHorizontalScrollIndicator={false}>
                 
             </ScrollView>
@@ -156,7 +170,7 @@ export default function VistaTipoIndicador() {
 
 const styles = StyleSheet.create({
     headerImage: {
-        color: '#808080',
+        color: 'white',
         bottom: -30,
         left: -10,
         position: 'absolute',
@@ -188,10 +202,10 @@ const styles = StyleSheet.create({
         marginBottom: 8,
     },
     reactLogo: {
-        height: 178,
-        width: 290,
-        bottom: 0,
-        left: 0,
+        height: 200,
+        width: 200,
+        bottom: 30,
+        right: 30,
         position: 'absolute',
     },
     button: {

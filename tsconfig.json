@@ -14,5 +14,5 @@
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
-, "app/index.tsx", "components/MenuDrawer.js", "components/Button.js", "components/BuscadorMarketIdHome.js", "components/CustomComponent.js", "components/navigation/Drawer/CustomDrawerContent.js", "app/views/VistaPerfil/Perfil.js", "app/views/Contacto.js"  ]
+, "app/index.tsx", "components/MenuDrawer.js", "components/Button.js", "components/BuscadorMarketIdHome.js", "components/CustomComponent.js", "components/navigation/Drawer/CustomDrawerContent.js", "app/views/VistaPerfil/Perfil.js", "app/views/VistaContacto/Contacto.js"  ]
 }

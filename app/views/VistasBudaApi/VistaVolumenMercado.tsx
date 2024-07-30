@@ -6,7 +6,7 @@ import { ThemedView } from '@/components/ThemedView';
 import { useState } from 'react';
 
 // Dependencias Firebase
-import { db } from '@/database/firebase';
+import { db, analyticsFirebase, crashlyticsFirebase } from '@/database/firebase';
 import { Button, Center, Input } from 'native-base';
 import React from 'react';
 import TableModal from '@/components/Modals/ModalVolumenMercado';
@@ -18,7 +18,17 @@ export default function VistaVolumenMercado() {
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
 
+  const analytics = analyticsFirebase;
+  const crashlytics = crashlyticsFirebase;
+
+  const nombreVistaActual = "VistaVolumenMercado";
+
   const fetchDataFromApiVolume = async (market_id: string) => {
+    await analytics.logScreenView({
+      screen_name: nombreVistaActual,
+      mensaje: "Click en botón consultar"
+    });
+    crashlytics.log('Obteniendo data Vista Volumen Mercado.');
     try {
       const response = await fetch(`http://10.200.82.184:8080/api/consultar-volumen/${market_id}`);
       if (!response.ok) {
@@ -28,9 +38,11 @@ export default function VistaVolumenMercado() {
       // Mostrar data de consulta a API de BUDA
       console.log(data)
       return data;
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      Alert.alert('Error', 'Error al consultar API');
+      // Agregar evento de Crashlytics
+      crashlytics.recordError(error);
+      // Alert.alert('Error', 'Error al consultar API');
     }
   }
 
@@ -58,8 +70,8 @@ export default function VistaVolumenMercado() {
 
     return (
       <ParallaxScrollView
-        headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
-        headerImage={<Ionicons size={310} name="code-slash" style={styles.headerImage} />}>
+        headerBackgroundColor={{ light: '#3d3f58', dark: '#353636' }}
+        headerImage={<Ionicons size={220} name="bar-chart" style={styles.headerImage} />}>
         <ThemedView style={styles.titleContainer}>
             <ThemedText type="title">Volumen De Mercado</ThemedText>
         </ThemedView>
@@ -100,9 +112,8 @@ export default function VistaVolumenMercado() {
 
 const styles = StyleSheet.create({
   headerImage: {
-    color: '#808080',
-    bottom: -90,
-    left: -35,
+    color: 'white',
+    right: 30,
     position: 'absolute',
   },
   container: {

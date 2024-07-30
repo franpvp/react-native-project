@@ -5,9 +5,10 @@ import { ThemedView } from '@/components/ThemedView';
 import { Center, Input, Button, IconButton, Icon, ChevronLeftIcon } from "native-base";
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import TableModal from '@/components/Modals/ModalComponent';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 
-import { db, analyticsFirebase } from '@/database/firebase';
+import { db, analyticsFirebase, crashlyticsFirebase } from '@/database/firebase';
 
 const VistaEstadoMercado = () => {
 
@@ -17,9 +18,16 @@ const VistaEstadoMercado = () => {
     const [modalVisible, setModalVisible] = useState(false);
 
     const analytics = analyticsFirebase;
-    const screenActual = "VistaEstadoMercado";
+    const crashlytics = crashlyticsFirebase;
 
-    const fetchDataApiBuda = async (marketId: string) => {
+    const nombreVistaActual = "VistaEstadoMercado";
+
+    const fetchDataApi = async (marketId: string) => {
+        analytics.logEvent('screen_view', {
+            firebase_screen: nombreVistaActual,
+            mensaje: "Se hace click en botón Consultar"
+        })
+        crashlytics.log("Obteniendo data de Vista Estado Mercado")
         try {
             // Registra un evento antes de hacer la consulta
             await analytics.logEvent('fetch_data_api_buda_start', {
@@ -42,14 +50,15 @@ const VistaEstadoMercado = () => {
             return data;
         } catch (error: any) {
             console.error(error);
-
+            // Agregar evento de Crashlytics
+            crashlytics.recordError(error);
             // Registra un evento en caso de error
             await analytics.logEvent('fetch_data_api_buda_error', {
                 marketId: marketId,
                 errorMessage: error.message
             });
 
-            Alert.alert('Error', 'Error al consultar API');
+            // Alert.alert('Error', 'Error al consultar API');
         }
     };
 
@@ -78,29 +87,34 @@ const VistaEstadoMercado = () => {
     };
     
     const handleApiAndFirestore = async () => {
-    // Registra un evento de clic en el botón
-    await analytics.logEvent('button_click_buscar', {
-        screen_name: screenActual,
-        buttonName: 'handleApiAndFirestore',
-    });
-    setLoading(true);
-    const data = await fetchDataApiBuda(marketId);
-    if (data) {
-        setApiData(data);
-        await saveDataToFirestore(data);
-        setModalVisible(true);
-    }
-    setLoading(false);
-};
+        // Registra un evento de clic en el botón
+        await analytics.logEvent('button_click_buscar', {
+            screen_name: nombreVistaActual,
+            buttonName: 'handleApiAndFirestore',
+            mensaje: 'Click en botón Buscar'
+        });
+        await analytics.logScreenView({
+            screen_name: nombreVistaActual,
+            mensaje: "Click en botón consultar"
+        });
+        setLoading(true);
+        const data = await fetchDataApi(marketId);
+        if (data) {
+            setApiData(data);
+            await saveDataToFirestore(data);
+            setModalVisible(true);
+        }
+        setLoading(false);
+    };
 
     return (
         <ParallaxScrollView
-            headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-            headerImage={
-            <Image
-                source={require('@/assets/images/partial-react-logo.png')}
-                style={styles.reactLogo}
-            />
+            headerBackgroundColor={{ light: '#3d3f58', dark: '#1D3D47' }}
+            headerImage={<Ionicons size={300} name="analytics-outline" style={styles.headerImage} />
+            // <Image
+            //     source={require('@/assets/images/partial-react-logo.png')}
+            //     style={styles.reactLogo}
+            // />
             }>
             <ThemedView style={styles.titleContainer}>
             <ThemedText type="title">Consulta Estado Mercado</ThemedText>
@@ -140,37 +154,44 @@ const VistaEstadoMercado = () => {
 
 const styles = StyleSheet.create({
     container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingTop: 50,
-    backgroundColor: 'white',
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingTop: 50,
+        backgroundColor: 'white',
+    },
+    headerImage: {
+        color: 'white',
+        bottom: -20,
+        right: 20,
+        position: 'absolute',
     },
     cell: {
-    flex: 1,
-    paddingHorizontal: 8,
+        flex: 1,
+        paddingHorizontal: 8,
     },
     row: {
-    flexDirection: 'row',
-    borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
-    paddingVertical: 8,
+        flexDirection: 'row',
+        borderBottomWidth: 1,
+        borderBottomColor: '#ddd',
+        paddingVertical: 8,
     },
     titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
     },
     stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+        gap: 8,
+        marginBottom: 8,
     },
     reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+        height: 178,
+        width: 290,
+        color: 'white',
+        bottom: 0,
+        left: 0,
+        position: 'absolute',
     },
     button: {
     flex: 1,
@@ -187,13 +208,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     },
     jsonContainer: {
-    margin: 16,
-    padding: 16,
-    borderRadius: 8,
-    backgroundColor: '#f5f5f5',
+        margin: 16,
+        padding: 16,
+        borderRadius: 8,
+        backgroundColor: '#f5f5f5',
     },
     jsonText: {
-    fontFamily: 'monospace',
+        fontFamily: 'monospace',
     },
 });
 

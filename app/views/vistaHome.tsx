@@ -30,7 +30,7 @@ export default function VistaHome({ navigation }: any) {
                 style={styles.pressableSmaller}
               >
                 <Image
-                  source={require('../../assets/images/indicadoresEco.png')}
+                  source={require('../../assets/images/indIcon.png')}
                   style={styles.image}
                   resizeMode="contain"
                 />
@@ -74,7 +74,7 @@ export default function VistaHome({ navigation }: any) {
               
         </VStack>
         {/* Contenido Endpoints Buda API */}
-        <VStack alignItems="center" paddingBottom={10}>
+        <VStack alignItems="center" paddingBottom={5}>
           <Box style={styles.containerBudaBox}>
             <Box alignItems="center">
               <Pressable
@@ -137,8 +137,8 @@ const styles = StyleSheet.create({
   containerIndBox: {
     alignSelf: "center",
     width: '100%',
-    borderBottomLeftRadius: 250,
-    borderBottomRightRadius: 250,
+    borderBottomRightRadius: 50,
+    borderBottomLeftRadius: 50,
     backgroundColor: "#3d3f58",
   },
   containerBudaBox: {

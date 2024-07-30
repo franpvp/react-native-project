@@ -19,7 +19,7 @@ import VistaEstadoMercado from '@/app/views/VistasBudaApi/VistaEstadoMercado';
 import VistaPerfil from '@/app/views/VistaPerfil/Perfil';
 import Login from '@/app/views/VistasAuth/Login';
 import Registro from '@/app/views/VistasAuth/Registro';
-import Contacto from './views/Contacto';
+import Contacto from './views/VistaContacto/Contacto';
 
 import { authFirebase, analyticsFirebase } from '@/database/firebase';
 import VistaIndicadores from './views/VistasIndicadoresApi/VistaIndicadores';
@@ -42,7 +42,7 @@ const HomeStackScreen = () => (
     <HomeStack.Navigator
         screenOptions={() => ({
             headerStyle: {
-                backgroundColor: '#0e7490',
+                backgroundColor: '#3d3f58',
                 height: 140,
                 borderWidth: 0,
                 elevation: 0,
@@ -227,7 +227,6 @@ export default function App() {
                 <><Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
                 <Stack.Screen name="Registro" component={Registro} options={{ headerShown: false }} />
                 <Stack.Screen name="Restablecer" component={RestablecerPassword} options={{ headerShown: false }} /></>
-                
             )}
         </Stack.Navigator>
         

@@ -2,6 +2,7 @@ import { firebase } from '@react-native-firebase/app';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import analytics from '@react-native-firebase/analytics';
+import crashlytics from '@react-native-firebase/crashlytics';
 import storage from '@react-native-firebase/storage';
 
 const firebaseConfig = {
@@ -21,7 +22,8 @@ if (!firebase.apps.length) {
 const db = firestore();
 const authFirebase = auth();
 const analyticsFirebase = analytics();
+const crashlyticsFirebase = crashlytics();
 const storageFirebase = storage();
 
-export { db, authFirebase, storageFirebase, analyticsFirebase };
+export { db, authFirebase, storageFirebase, analyticsFirebase, crashlyticsFirebase };
 

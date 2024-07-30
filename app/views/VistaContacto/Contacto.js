@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Center, Avatar, Text, Box, Button, VStack, TextArea } from "native-base";
 import { View, StyleSheet, TouchableOpacity, ScrollView, Alert, TextInput, SafeAreaView, StatusBar } from 'react-native';
-import CustomInput from '@/components/CustomInput';
 import * as DocumentPicker from 'expo-document-picker';
 import Ionicons from "@expo/vector-icons/Ionicons";
 
@@ -106,40 +105,46 @@ export default function Contacto() {
     return (
         <ScrollView showsHorizontalScrollIndicator={false}>
             <VStack paddingBottom={10}>
-                <Box style={styles.containerLabel}>
-                    <View style={styles.containerContacto}>
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                    <Box style={styles.box}>
+                        <Box style={styles.containerLabel}>
+                            <View style={styles.containerContacto}>
+                                <Center>
+                                    <TextInput
+                                        value={asunto}
+                                        onChangeText={setAsunto}
+                                        placeholder="Asunto"
+                                        autoCapitalize='none'
+                                        style={styles.input}
+                                    ></TextInput>
+                                </Center>
+                                <Center>
+                                    <TextInput
+                                        value={mensaje}
+                                        onChangeText={setMensaje}
+                                        placeholder="Mensaje"
+                                        autoCapitalize='none'
+                                        style={styles.input}
+                                    ></TextInput>
+                                </Center>
+                            </View>
+                            
+                        </Box>
+                        <Box alignSelf="center" marginBottom='20px' marginTop={5}>
+                            <TouchableOpacity onPress={pickDocument} style={styles.uploadButton}>
+                                <Ionicons name="cloud-upload-outline" size={24} color="white" style={styles.icon} />
+                                <Text style={styles.textButton}>Subir archivo</Text>
+                            </TouchableOpacity>
+                        </Box>
                         <Center>
-                            <TextInput
-                                value={asunto}
-                                onChangeText={setAsunto}
-                                placeholder="Asunto"
-                                autoCapitalize='none'
-                                style={styles.input}
-                            ></TextInput>
+                            <TouchableOpacity onPress={handleSubmit} style={styles.enviarButton}>
+                                <Text style={styles.text}>Enviar</Text>
+                            </TouchableOpacity>
                         </Center>
-                        <Center>
-                            <TextInput
-                                value={mensaje}
-                                onChangeText={setMensaje}
-                                placeholder="Mensaje"
-                                autoCapitalize='none'
-                                style={styles.input}
-                            ></TextInput>
-                        </Center>
-                    </View>
-                    
-                </Box>
-                <Box alignSelf="center" marginBottom='20px' marginTop={5}>
-                    <TouchableOpacity onPress={pickDocument} style={styles.uploadButton}>
-                        <Ionicons name="cloud-upload-outline" size={24} color="white" style={styles.icon} />
-                        <Text style={styles.textButton}>Subir archivo</Text>
-                    </TouchableOpacity>
-                </Box>
-                <Center>
-                    <TouchableOpacity onPress={handleSubmit} style={styles.enviarButton}>
-                        <Text style={styles.text}>Enviar</Text>
-                    </TouchableOpacity>
-                </Center>
+                    </Box>
+                </View>
+                
+                
             </VStack>
         </ScrollView>
     );
@@ -196,9 +201,9 @@ const styles = StyleSheet.create({
     enviarButton: {
         width: '80%',
         padding: 10,
-        marginTop: 10,
+        marginTop: 15,
         justifyContent:'center',
-        backgroundColor: '#0e7490',
+        backgroundColor: 'black',
         borderRadius: 30,
     },
     saveButtonText: {
@@ -208,7 +213,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     text: {
-        color: '#fff',
+        color: 'white',
         fontWeight: 'bold',
         alignItems: 'center',
         textAlign: 'center',
@@ -242,4 +247,11 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 16, 
     },
+    box: {
+        width: '100%',
+        backgroundColor: '#0e7490',
+        paddingBottom: 450,
+        borderBottomEndRadius: 600,
+        
+    }
 });

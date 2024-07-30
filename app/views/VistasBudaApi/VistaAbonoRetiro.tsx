@@ -9,7 +9,7 @@ import { Button, Center, Input } from "native-base";
 // import crashlytics from '@react-native-firebase/crashlytics';
 
 // Dependencia Firestore
-import { db } from '@/database/firebase';
+import { db, analyticsFirebase, crashlyticsFirebase } from '@/database/firebase';
 import TableModal from '@/components/Modals/ModalAbonosRetiros';
 import React from 'react';
 
@@ -23,9 +23,17 @@ export default function VistaAbonoRetiro() {
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
 
+  const analytics = analyticsFirebase;
+  const crashlytics = crashlyticsFirebase;
+
+  const nombreVistaActual = "VistaAbonoRetiro";
   // Realizar solicitud get a API Costos de abonos/retiros
   // Ejemplo para currency = 'btc' y para transaction_type = 'withdrawal'
   const fetchDataFromApiAR = async (currency: string, transactionType: string) => {
+    analytics.logEvent('screen_view', {
+      firebase_screen: nombreVistaActual,
+      mensaje: "Se hace click en botón Consultar"
+    })
     try {
       const response = await fetch(`http://10.200.82.184:8080/api/consultar-costos/${currency}/${transactionType}`);
       if (!response.ok) {
@@ -35,9 +43,11 @@ export default function VistaAbonoRetiro() {
       // Mostrar data de consulta a API de BUDA
       console.log(data)
       return data;
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      Alert.alert('Error', 'Error al consultar API');
+      // Agregar evento de Crashlytics
+      crashlytics.recordError(error);
+      // Alert.alert('Error', 'Error al consultar API');
     }
   }
 
@@ -63,6 +73,10 @@ export default function VistaAbonoRetiro() {
       // Guardamos la data obtenida en Firestore
       await saveDataToFirestoreAR(data);
       setModalVisible(true);
+      analytics.logEvent('screen_view', {
+        firebase_screen: nombreVistaActual,
+        mensaje: "Se muestra modal con info de consulta"
+      })
     }
     setLoading(false);
   };
@@ -82,8 +96,8 @@ export default function VistaAbonoRetiro() {
 
   return (
     <ParallaxScrollView
-      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
-      headerImage={<Ionicons size={250} name="code-slash" style={styles.headerImage} />}>
+      headerBackgroundColor={{ light: '#3d3f58', dark: '#353636' }}
+      headerImage={<Ionicons size={250} name="swap-horizontal-outline" style={styles.headerImage} />}>
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">Costos Abono y Retiros</ThemedText>
       </ThemedView>
@@ -134,9 +148,8 @@ export default function VistaAbonoRetiro() {
 
 const styles = StyleSheet.create({
   headerImage: {
-    color: '#808080',
-    bottom: -30,
-    left: -10,
+    color: 'white',
+    right: 20,
     position: 'absolute',
   },
   container: {

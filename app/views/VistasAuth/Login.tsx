@@ -31,9 +31,10 @@ const Login = ( {navigation}: any ) => {
             console.log(response);
 
             // Registrar el evento de inicio de sesión exitoso en Firebase Analytics
-            await analytics.logEvent('login_success', {
-                screen: 'Login', // Vista donde ocurrió el evento
+            analytics.logEvent('inicio_sesion_exitoso', {
+                screen_view: 'Login', // Vista donde ocurrió el evento
                 method: 'email', // Método de inicio de sesión
+                mensaje: 'Inicio de sesión correcto' 
             });
             console.log("Inicio de sesión correcto");
 
@@ -41,7 +42,7 @@ const Login = ( {navigation}: any ) => {
             console.log(error);
             alert("Inicio de sesión fallido: " + error.message);
 
-            await analytics.logEvent('login_failed', {
+            await analytics.logEvent('inicio_sesion_fallido', {
                 screen: 'Login', // Vista donde ocurrió el evento
                 method: 'email', // Método de inicio de sesión
                 error: error.message, // Mensaje de error

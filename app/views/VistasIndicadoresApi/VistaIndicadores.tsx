@@ -5,11 +5,11 @@ import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useState } from 'react';
-import { Button, Center, Input } from "native-base";
+import { Button, Center, Input, Box } from "native-base";
 // import crashlytics from '@react-native-firebase/crashlytics';
 
 // Dependencia Firestore
-import { db, analyticsFirebase } from '@/database/firebase';
+import { db, analyticsFirebase, crashlyticsFirebase } from '@/database/firebase';
 import TableModal from '@/components/Modals/ModalIndicadores';
 import React from 'react';
 
@@ -20,41 +20,66 @@ export default function VistaIndicadores() {
     const [modalVisible, setModalVisible] = useState(false);
 
     const analytics = analyticsFirebase;
+    const crashlytics = crashlyticsFirebase;
+
+    const nombreVistaActual = "VistaIndicadores";
 
     const fetchDataApiIndicadores = async () => {
-    try {
-        const response = await fetch(`http://10.200.82.184:8080/api/consultar-indicadores`);
-        if (!response.ok) {
-            throw new Error('No hay respuesta de API');
+        analytics.logEvent('screen_view', {
+            firebase_screen: nombreVistaActual,
+            mensaje: "Se hace click en botón Consultar"
+        })
+        crashlytics.log("Obteniendo data Vista Indicadores");
+        try {
+            const response = await fetch(`http://10.200.82.184:8080/api/consultar-indicadores`);
+            if (!response.ok) {
+                throw new Error('No hay respuesta de API');
+            }
+            const data = await response.json();
+            console.log(data)
+            return data;
+        } catch (error: any) {
+            console.error(error);
+            // Agregar crash de Crashlytics 
+            crashlytics.recordError(error)
+            crashlytics.setAttribute("Tipo Error", error.name);
+            crashlytics.setAttribute("Mensaje Error", error.message);
+            // Alert.alert('Error', 'Error al consultar API');
         }
-        const data = await response.json();
-        console.log(data)
-        return data;
-    } catch (error) {
-        console.error(error);
-        // Agregar crash de Crashlytics 
-        Alert.alert('Error', 'Error al consultar API');
     }
-}
 
-const handleApiAndFirestore = async () => {
-    setLoading(true);
-    // Se espera la respuesta de data al ingresar la currency
-    const data = await fetchDataApiIndicadores();
-    if (data) {
-        // Almacenamos la data en setApiData
-        setApiData(data);
-        // Guardamos la data obtenida en Firestore
-        await fetchDataApiIndicadores();
-        setModalVisible(true);
-    }
-    setLoading(false);
-};
+    const handleApiAndFirestore = async () => {
+        analytics.logEvent('screen_view' ,{
+            firebase_screen: nombreVistaActual,
+            mensaje: "Click botón Consulta"
+        })
+        setLoading(true);
+        try {
+            // Se espera la respuesta de data al ingresar la currency
+            const data = await fetchDataApiIndicadores();
+            if (data) {
+                // Almacenamos la data en setApiData
+                setApiData(data);
+                // Guardamos la data obtenida en Firestore
+                await fetchDataApiIndicadores();
+                setModalVisible(true);
+            } else {
+                // Si no se obtiene data, se reporta un error a Crashlytics y se fuerza un crash
+                crashlytics.log('No se obtuvo data de fetchDataApiIndicadores');
+                crashlytics.crash();
+            }
+        } catch (error: any) {
+            // Maneja cualquier otro error
+            crashlytics.recordError(error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
     <ParallaxScrollView
-        headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
-        headerImage={<Ionicons size={250} name="code-slash" style={styles.headerImage} />}>
+        headerBackgroundColor={{ light: '#3d3f58', dark: '#353636' }}
+        headerImage={<Ionicons size={200} name="cash" style={styles.headerImage} />}>
         <ThemedView style={styles.titleContainer}>
             <ThemedText type="title">Consultar Indicadores</ThemedText>
         </ThemedView>
@@ -83,9 +108,10 @@ const handleApiAndFirestore = async () => {
 
 const styles = StyleSheet.create({
     headerImage: {
-        color: '#808080',
-        bottom: -30,
-        left: -10,
+        color: 'white',
+        bottom: -10,
+        top: 20,
+        right: 30,
         position: 'absolute',
     },
     container: {
@@ -144,5 +170,10 @@ const styles = StyleSheet.create({
     jsonText: {
         fontFamily: 'monospace',
     },
+    box: {
+        width: '100%',
+        backgroundColor: '#0e7490',
+        position: 'absolute'
+    }
     
 });

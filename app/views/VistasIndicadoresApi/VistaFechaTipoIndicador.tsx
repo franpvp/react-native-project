@@ -10,13 +10,14 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 // import crashlytics from '@react-native-firebase/crashlytics';
 
 // Dependencia Firestore
-import { db, analyticsFirebase } from '@/database/firebase';
+import { db, analyticsFirebase, crashlyticsFirebase } from '@/database/firebase';
 import TableModal from '@/components/Modals/ModalFechaTipoIndicador';
 import React from 'react';
 
 export default function VistaFechaTipoIndicador() {
 
     const analytics = analyticsFirebase;
+    const crashlytics = crashlyticsFirebase;
 
     const [tipoIndicador, setTipoIndicador] = useState('');
     const [fecha, setFecha] = useState('');
@@ -24,7 +25,13 @@ export default function VistaFechaTipoIndicador() {
     const [loading, setLoading] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
 
+    const nombreVistaActual = "VistaFechaTipoIndicador";
+
     const fetchDataFromApi = async (tipoIndicador: string, fecha: string) => {
+        analytics.logEvent('screen_view', {
+            firebase_screen: nombreVistaActual,
+            mensaje: "Se hace click en botón Consultar"
+        })
     try {
         const response = await fetch(`http://10.200.82.184:8080/api/consultar-tipo-fecha/${tipoIndicador}/${fecha}`);
         if (!response.ok) {
@@ -36,6 +43,7 @@ export default function VistaFechaTipoIndicador() {
         return data;
     } catch (error) {
         console.error(error);
+        // Crashlytics
         Alert.alert('Error', 'Error al consultar API');
     }
 }
@@ -54,7 +62,7 @@ const handleApi = async () => {
 
     return (
     <ParallaxScrollView
-        headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
+        headerBackgroundColor={{ light: '#3d3f58', dark: '#353636' }}
         headerImage={<Ionicons size={250} name="code-slash" style={styles.headerImage} />}>
         <ThemedView style={styles.titleContainer}>
             <ThemedText type="title">Consultar por fecha indicador</ThemedText>

@@ -9,13 +9,14 @@ import { Button, Center, Input } from "native-base";
 // import crashlytics from '@react-native-firebase/crashlytics';
 
 // Dependencia Firestore
-import { db, analyticsFirebase } from '@/database/firebase';
+import { db, analyticsFirebase, crashlyticsFirebase } from '@/database/firebase';
 import TableModal from '@/components/Modals/ModalAñoTipoIndicadores';
 import React from 'react';
 
 export default function VistaAñoTipoIndicador() {
 
     const analytics = analyticsFirebase;
+    const crashlytics = crashlyticsFirebase;
 
     const [tipoIndicador, setTipoIndicador] = useState('');
     const [anio, setAnio] = useState('');
@@ -23,23 +24,35 @@ export default function VistaAñoTipoIndicador() {
     const [loading, setLoading] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
 
-    // Realizar solicitud get a API Costos de abonos/retiros
-    // Ejemplo para currency = 'btc' y para transaction_type = 'withdrawal'
+    const nombreVistaActual = "VistaAñoTipoIndicador";
+
     const fetchDataFromApi = async (tipoIndicador: string, anio: string) => {
-    try {
-        const response = await fetch(`http://10.200.82.184:8080/api/consultar-tipo-año/${tipoIndicador}/${anio}`);
-        if (!response.ok) {
-            throw new Error('No hay respuesta de API');
+        // Se agrega logEvent para hacer seguimiento en click a botón
+        analytics.logEvent('screen_view', {
+            firebase_screen: nombreVistaActual,
+            mensaje: "Se hace click en botón Consultar"
+        })
+
+        try {
+            const response = await fetch(`http://10.200.82.184:8080/api/consultar-tipo-año/${tipoIndicador}/${anio}`);
+            if (!response.ok) {
+                analytics.logEvent('screen_view', {
+                    firebase_screen: nombreVistaActual,
+                    mensaje: "No hay respuesta de API"
+                })
+                throw new Error('No hay respuesta de API');
+            }
+            const data = await response.json();
+            // Mostrar data de consulta a API de BUDA
+            console.log(data)
+            return data;
+        } catch (error: any) {
+            console.error(error);
+            // Crashlytics
+            crashlytics.recordError(error);
+            // Alert.alert('Error', 'Error al consultar API');
         }
-        const data = await response.json();
-        // Mostrar data de consulta a API de BUDA
-        console.log(data)
-        return data;
-    } catch (error) {
-        console.error(error);
-        Alert.alert('Error', 'Error al consultar API');
     }
-}
 
 const handleApi = async () => {
     setLoading(true);
