@@ -8,6 +8,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useState } from 'react';
 import { Button, Center, Input } from "native-base";
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 // Dependencia Firestore
 import { db, analyticsFirebase, crashlyticsFirebase } from '@/database/firebase';
@@ -122,14 +123,11 @@ export default function VistaTipoIndicador() {
     <ParallaxScrollView
         headerBackgroundColor={{ light: '#3d3f58', dark: '#353636' }}
         headerImage={
-            <Image
-                source={require('@/assets/images/ethLogo.png')}
-                style={styles.reactLogo}
-            />
+            <View style={styles.imageContainer}>
+                <Icon name="bitcoin" size={200} color="white" style={styles.icon} />
+                <Icon name="usd" size={200} color="white" style={styles.icon} />
+            </View>
         }>
-            <ScrollView showsHorizontalScrollIndicator={false}>
-                
-            </ScrollView>
         <ThemedView style={styles.titleContainer}>
             <ThemedText type="title">Consultar Tipo Indicador</ThemedText>
         </ThemedView>
@@ -201,12 +199,15 @@ const styles = StyleSheet.create({
         gap: 8,
         marginBottom: 8,
     },
+    imageContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
     reactLogo: {
-        height: 200,
         width: 200,
-        bottom: 30,
-        right: 30,
-        position: 'absolute',
+        height: 200,
+        marginHorizontal: 10,
     },
     button: {
         flex: 1,
@@ -230,6 +231,9 @@ const styles = StyleSheet.create({
     },
     jsonText: {
         fontFamily: 'monospace',
+    },
+    icon: {
+        marginHorizontal: 25,
     },
     
 });
