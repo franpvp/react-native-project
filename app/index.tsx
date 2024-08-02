@@ -28,6 +28,7 @@ import VistaFechaTipoIndicador from './views/VistasIndicadoresApi/VistaFechaTipo
 import VistaAnioTipoIndicador from './views/VistasIndicadoresApi/VistaAñoTipoIndicador';
 import RestablecerPassword from './views/VistasAuth/RestablecerPassword';
 import { User, onAuthStateChanged } from 'firebase/auth';
+import Perfil from '@/app/views/VistaPerfil/Perfil';
 
 
 const Stack = createStackNavigator();
@@ -56,7 +57,7 @@ const fetchPhotoURL = async (uid: string): Promise<string | null> => {
 
 const HomeStackScreen = ({ photoURL }: { photoURL: string | null }) => (
     <HomeStack.Navigator
-        screenOptions={({ route }) => ({
+        screenOptions={({ route, navigation }) => ({
         headerStyle: {
             backgroundColor: '#3d3f58',
             height: 140,
@@ -64,19 +65,20 @@ const HomeStackScreen = ({ photoURL }: { photoURL: string | null }) => (
             elevation: 0,
             shadowOpacity: 0,
         },
-        headerRight: () => {
+        headerLeft: () => {
             // Solo mostrar el avatar en la pantalla "Home"
             if (route.name === 'Home') {
             return (
-                <TouchableOpacity onPress={() => console.log('Avatar clicked!')}>
-                <Avatar
-                    bg="gray.200"
-                    size="65px"
-                    mr="20px"
-                    shadow={2}
-                    borderColor='#cbd5e1'
-                    source={{ uri: photoURL || 'https://via.placeholder.com/200' }}
-                />
+                <TouchableOpacity onPress={() => navigation.navigate("PerfilTab")}>
+                    <Avatar
+                        bg="gray.200"
+                        size="65px"
+                        ml="35px"
+                        mt="10px"
+                        shadow={2}
+                        borderColor='#cbd5e1'
+                        source={{ uri: photoURL || 'https://via.placeholder.com/200' }}
+                    />
                 </TouchableOpacity>
             );
             }

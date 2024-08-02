@@ -69,7 +69,6 @@ export default function VistaIndicadores() {
                 crashlytics.crash();
             }
         } catch (error: any) {
-            // Maneja cualquier otro error
             crashlytics.recordError(error);
         } finally {
             setLoading(false);

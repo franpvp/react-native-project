@@ -5,7 +5,7 @@ import { ScrollView } from "react-native";
 import { createStackNavigator } from '@react-navigation/stack';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { HeaderBackButton } from '@react-navigation/elements';
-import { db, analyticsFirebase, authFirebase } from "@/database/firebase"; 
+import { db, analyticsFirebase, authFirebase, crashlyticsFirebase } from "@/database/firebase"; 
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Icon from 'react-native-vector-icons/FontAwesome';
 
@@ -18,11 +18,63 @@ export default function VistaHome({ navigation }: any) {
   //   console.log('Test event logged');
   // };
 
+  const [apiData, setApiData] = useState<any[]>([]);
+    const analytics = analyticsFirebase;
+    const crashlytics = crashlyticsFirebase;
+
+    const nombreVistaActual = "VistaHome";
+
+    useEffect(() => {
+      const loadData = async () => {
+        const data = await fetchDataApiIndicadores();
+        if (data) {
+          // Extrae los indicadores del objeto
+          const indicatorsList = Object.values(data).filter(item => typeof item === 'object' && item !== null);
+          setApiData(indicatorsList);
+        }
+      };
+      loadData();
+    }, []);
+
+    const fetchDataApiIndicadores = async () => {
+      crashlytics.log("Obteniendo data Vista Indicadores");
+      try {
+        const response = await fetch(`http://192.168.1.85:8080/api/consultar-indicadores`);
+        if (!response.ok) {
+          throw new Error('No hay respuesta de API');
+        }
+        const data = await response.json();
+        console.log(data); // Verifica la estructura de los datos aquí
+        return data;
+      } catch (error: any) {
+        console.error(error);
+        crashlytics.recordError(error);
+        crashlytics.setAttribute("Tipo Error", error.name);
+        crashlytics.setAttribute("Mensaje Error", error.message);
+      }
+    };
+
+    const renderIndicatorBox = (indicator: any) => (
+      <Box key={indicator.codigo} style={styles.indicatorBox}>
+        <Text fontSize="lg" color="white" fontWeight={600}>{indicator.nombre}</Text>
+        <Text fontSize="md" color="white">{indicator.valor} {indicator.unidad_medida}</Text>
+      </Box>
+    );
+
   return (
     <View style={styles.container}>
       <ScrollView showsHorizontalScrollIndicator={false}>
         {/* Contenido Endpoint Indicadores económicos */}
         <VStack alignItems="center" paddingBottom={5}>
+          <Box style={styles.containerListaIndicadores}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            {apiData.length > 0 ? (
+              apiData.map((indicator) => renderIndicatorBox(indicator))
+            ) : (
+              <Text color="white">No se encontraron datos</Text>
+            )}
+          </ScrollView>
+          </Box>
           <Box style={styles.containerIndBox}>
             <Box alignItems="center">
               <Pressable
@@ -122,6 +174,25 @@ export default function VistaHome({ navigation }: any) {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "#e5e5e5"
+  },
+  containerListaIndicadores: {
+    alignSelf: "center",
+    width: '100%',
+    backgroundColor: "#3d3f58",
+  },
+  indicatorBox: {
+    alignSelf: "center",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 20,
+    margin: 10,
+    backgroundColor: "#0369a1",
+    borderRadius: 22,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   topBox: {
     position: 'absolute',
