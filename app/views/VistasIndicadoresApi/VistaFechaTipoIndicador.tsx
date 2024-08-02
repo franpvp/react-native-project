@@ -70,28 +70,26 @@ const handleApi = async () => {
             </View>
         }>
         <ThemedView style={styles.titleContainer}>
-            <ThemedText type="title">Consultar por fecha indicador</ThemedText>
+            <Text style={styles.titulo}>Consultar por fecha indicador</Text>
         </ThemedView>
         <ThemedText>Entrega el valor del indicador consultado según la fecha especificada.</ThemedText>
         <ThemedView>
-            <Input 
-                size="lg" 
-                variant="outline" 
-                placeholder="Ingrese indicador" 
-                mt={3}
+            <TextInput
                 value={tipoIndicador}
                 onChangeText={setTipoIndicador}
-            />
+                placeholder="Ingrese consulta"
+                autoCapitalize='none'
+                style={styles.input}
+            ></TextInput>
         </ThemedView>
         <ThemedView>
-            <Input 
-                size="lg" 
-                variant="outline" 
-                placeholder="Ingrese fecha(dd-mm-yyy)" 
-                mt={3}
+            <TextInput
                 value={fecha}
                 onChangeText={setFecha}
-            />
+                placeholder="Ingrese fecha (dd-mm-yyyy)"
+                autoCapitalize='none'
+                style={styles.input}
+            ></TextInput>
         </ThemedView>
         <Center>
             <Button 
@@ -99,9 +97,9 @@ const handleApi = async () => {
                 variant="solid" 
                 w="80%" 
                 borderRadius={40}
-                marginTop={5}
+                marginTop={1}
                 onPress={handleApi}>
-                Consultar
+                Buscar
             </Button>
         </Center>
         <ScrollView>
@@ -160,13 +158,6 @@ const styles = StyleSheet.create({
         gap: 8,
         marginBottom: 8,
     },
-    reactLogo: {
-        height: 178,
-        width: 290,
-        bottom: 0,
-        left: 0,
-        position: 'absolute',
-    },
     button: {
         flex: 1,
         justifyContent: 'center',
@@ -175,11 +166,21 @@ const styles = StyleSheet.create({
         borderRadius: 10,
     },
     input: {
-        height: 40,
-        borderColor: 'gray',
-        borderWidth: 1,
-        marginBottom: 16,
-        paddingHorizontal: 8,
+        height: 45,
+        backgroundColor: 'white',
+        borderRadius: 10,
+        borderWidth: 0.5,
+        paddingHorizontal: 20,
+        marginTop: 10,
+        marginBottom: 12,
+        fontSize: 16,
+        color: 'black',
+        width: '100%',
+    },
+    titulo: {
+        fontSize: 32,
+        fontWeight: "700",
+        textAlign: 'justify',
     },
     jsonContainer: {
         margin: 16,

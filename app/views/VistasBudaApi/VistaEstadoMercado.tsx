@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Image, Alert, ScrollView, ActivityIndicator, View } from 'react-native';
+import { StyleSheet, Image, Alert, ScrollView, ActivityIndicator, View, Text, TextInput } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { Center, Input, Button, IconButton, Icon, ChevronLeftIcon } from "native-base";
@@ -113,17 +113,17 @@ const VistaEstadoMercado = () => {
             headerImage={<Ionicons size={300} name="analytics-outline" style={styles.headerImage} />
         }>
             <ThemedView style={styles.titleContainer}>
-            <ThemedText type="title">Consulta Estado Mercado</ThemedText>
+                <ThemedText type="title">Consulta Estado Mercado</ThemedText>
             </ThemedView>
+            <Text style={styles.desc}>Estado actual de un determinado mercado. Se entregan las mejores ofertas de compra y venta (bid y ask), asi como el precio de la ultima transacción (last_price) para el mercado solicitado.</Text>
             <ThemedView>
-            <Input 
-                size="lg" 
-                variant="outline" 
-                placeholder="Ingrese consulta" 
-                mt={3}
-                value={marketId}
-                onChangeText={setMarketId}
-            />
+                <TextInput
+                    value={marketId}
+                    onChangeText={setMarketId}
+                    placeholder="Ingrese consulta"
+                    autoCapitalize='none'
+                    style={styles.input}
+                ></TextInput>
             </ThemedView>
             <ThemedView>
             <Center>
@@ -132,7 +132,7 @@ const VistaEstadoMercado = () => {
                     variant="solid" 
                     w="80%" 
                     borderRadius={40}
-                    marginTop={5}
+                    marginTop={2}
                     onPress={handleApiAndFirestore}>
                     Buscar
                 </Button>
@@ -191,18 +191,23 @@ const styles = StyleSheet.create({
         position: 'absolute',
     },
     button: {
-    flex: 1,
-    justifyContent: 'center',
-    marginHorizontal: 16,
-    backgroundColor: 'blue',
-    borderRadius: 10,
+        flex: 1,
+        justifyContent: 'center',
+        marginHorizontal: 16,
+        backgroundColor: 'blue',
+        borderRadius: 10,
     },
     input: {
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    marginBottom: 16,
-    paddingHorizontal: 8,
+        height: 45,
+        backgroundColor: 'white',
+        borderRadius: 10,
+        borderWidth: 0.5,
+        paddingHorizontal: 20,
+        marginTop: 10,
+        marginBottom: 12,
+        fontSize: 16,
+        color: 'black',
+        width: '100%',
     },
     jsonContainer: {
         margin: 16,
@@ -213,6 +218,10 @@ const styles = StyleSheet.create({
     jsonText: {
         fontFamily: 'monospace',
     },
+    desc: {
+        textAlign: 'justify',
+        fontSize: 16
+    }
 });
 
 export default VistaEstadoMercado;

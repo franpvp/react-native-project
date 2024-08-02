@@ -92,7 +92,7 @@ export default function VistaIndicadores() {
                     marginTop={5}
                     borderRadius={40}
                     onPress={handleApiAndFirestore}>
-                    Consultar
+                    Buscar
                 </Button>
             </Center>
         </ThemedView>

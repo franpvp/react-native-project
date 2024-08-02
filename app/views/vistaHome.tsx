@@ -97,7 +97,7 @@ export default function VistaHome({ navigation }: any) {
             {apiData.length > 0 ? (
               apiData.map((indicator) => renderIndicatorBox(indicator))
             ) : (
-              <Text color="white">No se encontraron datos</Text>
+              <Text color="white"></Text>
             )}
           </ScrollView>
           </Box>

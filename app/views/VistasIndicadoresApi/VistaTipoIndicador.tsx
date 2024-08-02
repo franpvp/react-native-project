@@ -130,18 +130,17 @@ export default function VistaTipoIndicador() {
             </View>
         }>
         <ThemedView style={styles.titleContainer}>
-            <ThemedText type="title">Consultar Tipo Indicador</ThemedText>
+            <ThemedText type="title">Consultar por Indicador</ThemedText>
         </ThemedView>
         <ThemedText>Entrega los valores del último mes del indicador consultado.</ThemedText>
         <ThemedView>
-            <Input 
-                size="lg" 
-                variant="outline" 
-                placeholder="Ingrese consulta" 
-                mt={3}
+            <TextInput
                 value={tipoIndicador}
                 onChangeText={setTipoIndicador}
-            />
+                placeholder="Ingrese consulta"
+                autoCapitalize='none'
+                style={styles.input}
+            ></TextInput>
         </ThemedView>
         <Center>
             <Button 
@@ -149,9 +148,9 @@ export default function VistaTipoIndicador() {
                 variant="solid" 
                 w="80%" 
                 borderRadius={40}
-                marginTop={5}
+                marginTop={1}
                 onPress={handleApiAndFirestore}>
-                Consultar
+                Buscar
             </Button>
         </Center>
         <ScrollView style={{marginBottom: 100}}>
@@ -223,11 +222,16 @@ const styles = StyleSheet.create({
         borderRadius: 10,
     },
     input: {
-        height: 40,
-        borderColor: 'gray',
-        borderWidth: 1,
-        marginBottom: 16,
-        paddingHorizontal: 8,
+        height: 45,
+        backgroundColor: 'white',
+        borderRadius: 10,
+        borderWidth: 0.5,
+        paddingHorizontal: 20,
+        marginTop: 10,
+        marginBottom: 12,
+        fontSize: 16,
+        color: 'black',
+        width: '100%',
     },
     jsonContainer: {
         margin: 16,

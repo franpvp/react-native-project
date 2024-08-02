@@ -74,16 +74,15 @@ export default function VistaVolumenMercado() {
         <ThemedView style={styles.titleContainer}>
             <ThemedText type="title">Volumen De Mercado</ThemedText>
         </ThemedView>
-        <ThemedText>Consultar volumen transado en un determinado mercado.</ThemedText>
+        <Text style={styles.desc}>Consultar volumen transado en un determinado mercado.</Text>
         <ThemedView>
-          <Input 
-            size="lg" 
-            variant="outline" 
-            placeholder="Ingrese consulta" 
-            mt={3}
+          <TextInput
             value={marketId}
             onChangeText={setMarketId}
-          />
+            placeholder="Ingrese consulta"
+            autoCapitalize='none'
+            style={styles.input}
+          ></TextInput>
         </ThemedView>
         <ThemedView>
           <Center>
@@ -92,9 +91,9 @@ export default function VistaVolumenMercado() {
                 variant="solid" 
                 w="80%" 
                 borderRadius={40}
-                marginTop={5}
+                marginTop={1}
                 onPress={handleApi}>
-                    Consultar
+                  Buscar
               </Button>
           </Center>
         </ThemedView>
@@ -148,12 +147,16 @@ const styles = StyleSheet.create({
       borderRadius: 10,
   },
   input: {
-      height: 40,
-      borderColor: 'gray',
-      borderWidth: 1,
-      marginBottom: 16,
-      paddingHorizontal: 8,
-  },
+    height: 45,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    borderWidth: 0.5,
+    paddingHorizontal: 20,
+    marginBottom: 12,
+    fontSize: 16,
+    color: 'black',
+    width: '100%',
+},
   jsonContainer: {
       margin: 16,
       padding: 16,
@@ -163,5 +166,9 @@ const styles = StyleSheet.create({
   jsonText: {
       fontFamily: 'monospace',
   },
+  desc: {
+    textAlign: 'justify',
+    fontSize: 16
+}
   
 });

@@ -80,24 +80,22 @@ const handleApi = async () => {
         </ThemedView>
         <ThemedText>Entrega los últimos valores registrados de los principales indicadores.</ThemedText>
         <ThemedView>
-            <Input 
-                size="lg" 
-                variant="outline" 
-                placeholder="Ingrese consulta" 
-                mt={3}
+            <TextInput
                 value={tipoIndicador}
                 onChangeText={setTipoIndicador}
-            />
+                placeholder="Ingrese consulta"
+                autoCapitalize='none'
+                style={styles.input}
+            ></TextInput>
         </ThemedView>
         <ThemedView>
-            <Input 
-                size="lg" 
-                variant="outline" 
-                placeholder="Ingrese año" 
-                mt={3}
+            <TextInput
                 value={anio}
                 onChangeText={setAnio}
-            />
+                placeholder="Ingrese año"
+                autoCapitalize='none'
+                style={styles.input}
+            ></TextInput>
         </ThemedView>
         <Center>
             <Button 
@@ -105,9 +103,9 @@ const handleApi = async () => {
                 variant="solid" 
                 w="80%" 
                 borderRadius={40}
-                marginTop={5}
+                marginTop={1}
                 onPress={handleApi}>
-                Consultar
+                Buscar
             </Button>
         </Center>
         <ScrollView>
@@ -128,11 +126,11 @@ const styles = StyleSheet.create({
     },
     headerText: {
         color: 'white',
-        fontSize: 40,
+        fontSize: 30,
         fontWeight: 'bold',
         textAlign: 'center',
         alignItems: 'center',
-        marginTop: 170,
+        marginTop: 180,
         marginLeft: 250
     },
     headerImage: {
@@ -182,11 +180,15 @@ const styles = StyleSheet.create({
         borderRadius: 10,
     },
     input: {
-        height: 40,
-        borderColor: 'gray',
-        borderWidth: 1,
-        marginBottom: 16,
-        paddingHorizontal: 8,
+        height: 45,
+        backgroundColor: 'white',
+        borderRadius: 10,
+        borderWidth: 0.5,
+        paddingHorizontal: 20,
+        marginBottom: 12,
+        fontSize: 16,
+        color: 'black',
+        width: '100%',
     },
     jsonContainer: {
         margin: 16,
