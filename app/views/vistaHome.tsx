@@ -39,7 +39,7 @@ export default function VistaHome({ navigation }: any) {
     const fetchDataApiIndicadores = async () => {
       crashlytics.log("Obteniendo data Vista Indicadores");
       try {
-        const response = await fetch(`http://192.168.1.85:8080/api/consultar-indicadores`);
+        const response = await fetch(`http://192.168.1.83:8080/api/consultar-indicadores`);
         if (!response.ok) {
           throw new Error('No hay respuesta de API');
         }
@@ -54,12 +54,38 @@ export default function VistaHome({ navigation }: any) {
       }
     };
 
-    const renderIndicatorBox = (indicator: any) => (
-      <Box key={indicator.codigo} style={styles.indicatorBox}>
-        <Text fontSize="lg" color="white" fontWeight={600}>{indicator.nombre}</Text>
-        <Text fontSize="md" color="white">{indicator.valor} {indicator.unidad_medida}</Text>
-      </Box>
-    );
+    const renderIndicatorBox = (indicator: any) => {
+      const formateoUnidad = (unidad: string) => {
+        switch (unidad) {
+          case "Porcentaje":
+            return "%";
+          case "Pesos":
+            return "CLP";
+          case "Dólar":
+            return "USD";
+          default:
+            return unidad;
+        }
+      };
+      const formateoValor = (value: number, unit: string) => {
+        if (unit === "%") {
+          return `${value}`;
+        } else {
+          return `$ ${value}`;
+        }
+      };
+
+      const unidadFormateada = formateoUnidad(indicator.unidad_medida);
+    
+      return (
+        <Box key={indicator.codigo} style={styles.indicatorBox}>
+          <Text fontSize="22px" color="white" fontWeight={900}>{indicator.nombre}</Text>
+          <Text fontSize="22px" color="white">
+            {formateoValor(indicator.valor, unidadFormateada)} {unidadFormateada}
+          </Text>
+        </Box>
+      );
+    };
 
   return (
     <View style={styles.container}>
@@ -185,9 +211,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     padding: 20,
-    margin: 10,
-    backgroundColor: "#0369a1",
-    borderRadius: 22,
+    margin: 15,
+    marginLeft: 15,
+    marginRight: 2,
+    backgroundColor: "#292524",
+    opacity: .9,
+    borderRadius: 5,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
@@ -225,7 +254,7 @@ const styles = StyleSheet.create({
     paddingLeft: 40,
     paddingRight: 40,
     marginTop: 20,
-    marginLeft: 40,
+    marginLeft: 15,
     marginBottom: 30, 
     backgroundColor: "#0369a1",
     borderRadius: 22,
@@ -279,7 +308,7 @@ const styles = StyleSheet.create({
     paddingLeft: 40,
     paddingRight: 40,
     marginTop: 20,
-    marginRight: 40,
+    marginRight: 10,
     backgroundColor: "#0369a1",
     borderRadius: 22,
     shadowColor: "#000",

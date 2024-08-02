@@ -34,7 +34,7 @@ export default function VistaAñoTipoIndicador() {
         })
 
         try {
-            const response = await fetch(`http://192.168.1.85:8080/api/consultar-tipo-año/${tipoIndicador}/${anio}`);
+            const response = await fetch(`http://192.168.1.83:8080/api/consultar-tipo-año/${tipoIndicador}/${anio}`);
             if (!response.ok) {
                 analytics.logEvent('screen_view', {
                     firebase_screen: nombreVistaActual,

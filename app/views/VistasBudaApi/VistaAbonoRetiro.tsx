@@ -35,7 +35,7 @@ export default function VistaAbonoRetiro() {
       mensaje: "Se hace click en botón Consultar"
     })
     try {
-      const response = await fetch(`http://192.168.1.85:8080/api/consultar-costos/${currency}/${transactionType}`);
+      const response = await fetch(`http://192.168.1.83:8080/api/consultar-costos/${currency}/${transactionType}`);
       if (!response.ok) {
         throw new Error('No hay respuesta de API');
       }
@@ -119,6 +119,7 @@ export default function VistaAbonoRetiro() {
                   variant="solid" 
                   w="80%" 
                   borderRadius={40}
+                  marginTop={5}
                   onPress={() => typeSelected('deposit')}>
                       Deposito
               </Button>
@@ -131,6 +132,7 @@ export default function VistaAbonoRetiro() {
                   variant="solid" 
                   w="80%" 
                   borderRadius={40}
+                  marginTop={2}
                   onPress={() => typeSelected('withdrawal')}>
                       Retiro
               </Button>

@@ -34,7 +34,7 @@ const VistaEstadoMercado = () => {
                 marketId: marketId
             });
             // Consulta a servicio Java Springboot
-            const response = await fetch(`http://192.168.1.85:8080/api/consultar-mercado/${marketId}`);
+            const response = await fetch(`http://192.168.1.83:8080/api/consultar-mercado/${marketId}`);
             if (!response.ok) {
                 throw new Error('No hay respuesta de API');
             }
@@ -111,11 +111,7 @@ const VistaEstadoMercado = () => {
         <ParallaxScrollView
             headerBackgroundColor={{ light: '#3d3f58', dark: '#1D3D47' }}
             headerImage={<Ionicons size={300} name="analytics-outline" style={styles.headerImage} />
-            // <Image
-            //     source={require('@/assets/images/partial-react-logo.png')}
-            //     style={styles.reactLogo}
-            // />
-            }>
+        }>
             <ThemedView style={styles.titleContainer}>
             <ThemedText type="title">Consulta Estado Mercado</ThemedText>
             </ThemedView>
@@ -136,6 +132,7 @@ const VistaEstadoMercado = () => {
                     variant="solid" 
                     w="80%" 
                     borderRadius={40}
+                    marginTop={5}
                     onPress={handleApiAndFirestore}>
                     Buscar
                 </Button>

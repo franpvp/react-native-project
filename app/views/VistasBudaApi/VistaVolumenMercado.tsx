@@ -23,14 +23,14 @@ export default function VistaVolumenMercado() {
 
   const nombreVistaActual = "VistaVolumenMercado";
 
-  const fetchDataFromApiVolume = async (market_id: string) => {
+  const fetchDataFromApi = async (market_id: string) => {
     await analytics.logScreenView({
       screen_name: nombreVistaActual,
       mensaje: "Click en botón consultar"
     });
     crashlytics.log('Obteniendo data Vista Volumen Mercado.');
     try {
-      const response = await fetch(`http://192.168.1.85:8080/api/consultar-volumen/${market_id}`);
+      const response = await fetch(`http://192.168.1.83:8080/api/consultar-volumen/${market_id}`);
       if (!response.ok) {
         throw new Error('No hay respuesta de API');
       }
@@ -46,24 +46,23 @@ export default function VistaVolumenMercado() {
     }
   }
 
-  const saveDataToFirestore = async (data: any) => {
-    try {
-      // Guardar la data a la tabla abonosRetiros de Firebase
-      await db.collection('abonosRetiros').add(data);
-    } catch (error) {
-      // En caso de error guardar en tabla abonosRetirosError
-      await db.collection('abonosRetirosError').add(data);
-      console.error('Error al guardar en Firestore: ', error);
-      Alert.alert('Error', 'Error al guardar en Firestore');
-    }
-  };
+  // const saveDataToFirestore = async (data: any) => {
+  //   try {
+  //     await db.collection('abonosRetiros').add(data);
+  //   } catch (error) {
+  //     await db.collection('abonosRetirosError').add(data);
+  //     console.error('Error al guardar en Firestore: ', error);
+  //     Alert.alert('Error', 'Error al guardar en Firestore');
+  //   }
+  // };
 
-  const handleApiAndFirestore = async () => {
+  const handleApi = async () => {
     setLoading(true);
-    const data = await fetchDataFromApiVolume(marketId);
+    const data = await fetchDataFromApi(marketId);
     if (data) {
       setApiData(data);
-      await saveDataToFirestore(data);
+      // await saveDataToFirestore(data);
+      setModalVisible(true);
     }
     setLoading(false);
   };
@@ -93,7 +92,8 @@ export default function VistaVolumenMercado() {
                 variant="solid" 
                 w="80%" 
                 borderRadius={40}
-                onPress={handleApiAndFirestore}>
+                marginTop={5}
+                onPress={handleApi}>
                     Consultar
               </Button>
           </Center>
@@ -101,9 +101,7 @@ export default function VistaVolumenMercado() {
         <ScrollView>
           {loading && <ActivityIndicator size="large" color="#0000ff" />}
           {apiData && (
-              <View style={styles.jsonContainer}>
-                  <TableModal isOpen={modalVisible} onClose={() => setModalVisible(false)} data={apiData} />
-              </View>
+              <TableModal isOpen={modalVisible} onClose={() => setModalVisible(false)} data={apiData} />
           )}
         </ScrollView>
       </ParallaxScrollView>
@@ -141,13 +139,6 @@ const styles = StyleSheet.create({
   stepContainer: {
       gap: 8,
       marginBottom: 8,
-  },
-  reactLogo: {
-      height: 178,
-      width: 290,
-      bottom: 0,
-      left: 0,
-      position: 'absolute',
   },
   button: {
       flex: 1,

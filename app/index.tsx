@@ -68,21 +68,30 @@ const HomeStackScreen = ({ photoURL }: { photoURL: string | null }) => (
         headerLeft: () => {
             // Solo mostrar el avatar en la pantalla "Home"
             if (route.name === 'Home') {
-            return (
-                <TouchableOpacity onPress={() => navigation.navigate("PerfilTab")}>
-                    <Avatar
-                        bg="gray.200"
-                        size="65px"
-                        ml="35px"
-                        mt="10px"
-                        shadow={2}
-                        borderColor='#cbd5e1'
-                        source={{ uri: photoURL || 'https://via.placeholder.com/200' }}
-                    />
-                </TouchableOpacity>
-            );
+                return (
+                    <TouchableOpacity onPress={() => navigation.navigate("PerfilTab")}>
+                        <Avatar
+                            bg="gray.200"
+                            size="65px"
+                            ml="15px"
+                            mt="10px"
+                            shadow={2}
+                            borderColor='#cbd5e1'
+                            source={{ uri: photoURL || 'https://via.placeholder.com/200' }}
+                        />
+                    </TouchableOpacity>
+                );
+            } else {
+                return (
+                    <TouchableOpacity
+                        onPress={() => navigation.goBack()}>
+                        <HeaderBackButton 
+                            tintColor="#fff" // Color del botón de retroceso
+                            style={styles.buttonContainer} 
+                        />
+                    </TouchableOpacity>
+                );
             }
-            return null; // No mostrar el avatar en otras pantallas
         },
         headerTintColor: '#fff',
         headerTitleStyle: {

@@ -34,7 +34,7 @@ export default function VistaTipoIndicador() {
         })
         crashlytics.log("Obteniendo data Vista Tipo Indicador")
         try {
-            const response = await fetch(`http://192.168.1.85:8080/api/consultar-tipo/${tipoIndicador}`);
+            const response = await fetch(`http://192.168.1.83:8080/api/consultar-tipo/${tipoIndicador}`);
             if (!response.ok) {
                 throw new Error('No hay respuesta de API');
             }

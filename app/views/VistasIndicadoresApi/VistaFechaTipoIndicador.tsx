@@ -33,7 +33,7 @@ export default function VistaFechaTipoIndicador() {
             mensaje: "Se hace click en botón Consultar"
         })
     try {
-        const response = await fetch(`http://192.168.1.85:8080/api/consultar-tipo-fecha/${tipoIndicador}/${fecha}`);
+        const response = await fetch(`http://192.168.1.83:8080/api/consultar-tipo-fecha/${tipoIndicador}/${fecha}`);
         if (!response.ok) {
             throw new Error('No hay respuesta de API');
         }
