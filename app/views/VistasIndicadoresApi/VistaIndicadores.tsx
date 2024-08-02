@@ -31,7 +31,7 @@ export default function VistaIndicadores() {
         })
         crashlytics.log("Obteniendo data Vista Indicadores");
         try {
-            const response = await fetch(`http://10.200.82.184:8080/api/consultar-indicadores`);
+            const response = await fetch(`http://192.168.1.85:8080/api/consultar-indicadores`);
             if (!response.ok) {
                 throw new Error('No hay respuesta de API');
             }
@@ -90,6 +90,7 @@ export default function VistaIndicadores() {
                     size="lg" 
                     variant="solid" 
                     w="80%" 
+                    marginTop={5}
                     borderRadius={40}
                     onPress={handleApiAndFirestore}>
                     Consultar

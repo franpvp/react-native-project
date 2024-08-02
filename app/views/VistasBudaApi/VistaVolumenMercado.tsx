@@ -30,7 +30,7 @@ export default function VistaVolumenMercado() {
     });
     crashlytics.log('Obteniendo data Vista Volumen Mercado.');
     try {
-      const response = await fetch(`http://10.200.82.184:8080/api/consultar-volumen/${market_id}`);
+      const response = await fetch(`http://192.168.1.85:8080/api/consultar-volumen/${market_id}`);
       if (!response.ok) {
         throw new Error('No hay respuesta de API');
       }

@@ -7,6 +7,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import { HeaderBackButton } from '@react-navigation/elements';
 import { analyticsFirebase } from "@/database/firebase"; 
 import Ionicons from "@expo/vector-icons/Ionicons";
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 export default function VistaHome({ navigation }: any) {
 
@@ -48,7 +49,7 @@ export default function VistaHome({ navigation }: any) {
                   onPress={() => navigation.navigate("Tipo Indicador")}
                 >
                   <Box style={styles.secondBox}>
-                    <Ionicons name="cash-outline" size={24} color="white" style={styles.icon} />
+                  <Icon name="bitcoin" size={24} color="white" style={styles.icon} />
                     <Text fontSize="lg" color="white" fontWeight={600}>Tipo Indicador</Text>
                   </Box>
                 </Pressable>
@@ -56,7 +57,7 @@ export default function VistaHome({ navigation }: any) {
                   onPress={() => navigation.navigate("Fecha Tipo Indicador")}
                 >
                   <Box style={styles.thirdBox}>
-                    <Ionicons name="bar-chart-outline" size={24} color="white" style={styles.icon} />
+                    <Text fontSize="lg" color="white" fontWeight='bold'>DD-MM-YYYY</Text>
                     <Text fontSize="lg" color="white" fontWeight={600}>Fecha Tipo Indicador</Text>
                   </Box>
                 </Pressable>
@@ -64,7 +65,7 @@ export default function VistaHome({ navigation }: any) {
                   onPress={() => navigation.navigate("Año Tipo Indicador")}
                 >
                   <Box style={styles.fourthBox}>
-                    <Ionicons name="bar-chart-outline" size={24} color="white" style={styles.icon} />
+                  <Icon name="calendar" size={24} color="white" style={styles.icon} />
                     <Text fontSize="lg" color="white" fontWeight={600}>Año Tipo Indicador</Text>
                   </Box>
                 </Pressable>
@@ -160,6 +161,11 @@ const styles = StyleSheet.create({
     marginBottom: 30, 
     backgroundColor: "#0369a1",
     borderRadius: 22,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   secondBox: {
     alignSelf: "center",
@@ -174,6 +180,11 @@ const styles = StyleSheet.create({
     marginBottom: 30, 
     backgroundColor: "#0369a1",
     borderRadius: 22,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   thirdBox: {
     alignSelf: "center",
@@ -186,6 +197,11 @@ const styles = StyleSheet.create({
     marginRight: 10,
     backgroundColor: "#0369a1",
     borderRadius: 22,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   fourthBox: {
     alignSelf: "center",
@@ -198,6 +214,11 @@ const styles = StyleSheet.create({
     marginRight: 40,
     backgroundColor: "#0369a1",
     borderRadius: 22,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   centeredView: {
     flex: 1,

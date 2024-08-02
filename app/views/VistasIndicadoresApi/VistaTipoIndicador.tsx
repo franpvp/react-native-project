@@ -34,7 +34,7 @@ export default function VistaTipoIndicador() {
         })
         crashlytics.log("Obteniendo data Vista Tipo Indicador")
         try {
-            const response = await fetch(`http://10.200.82.184:8080/api/consultar-tipo/${tipoIndicador}`);
+            const response = await fetch(`http://192.168.1.85:8080/api/consultar-tipo/${tipoIndicador}`);
             if (!response.ok) {
                 throw new Error('No hay respuesta de API');
             }
@@ -75,23 +75,24 @@ export default function VistaTipoIndicador() {
 
         return (
             <View>
-                <ScrollView showsHorizontalScrollIndicator={false}>
-                    <Text>Gráfica de Unidad de Fomento (UF)</Text>
-                    <LineChart
-                        data={{
+                <Text>Gráfica {data.nombre}</Text>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                    <View style={{ width: Math.max(values.length * 70, Dimensions.get('window').width - 70) }}>
+                        <LineChart
+                            data={{
                             labels: labels,
                             datasets: [
                                 {
-                                    data: values
+                                data: values
                                 }
                             ]
-                        }}
-                        width={Dimensions.get('window').width - 70}
-                        height={450}
-                        yAxisLabel="$"
-                        yAxisSuffix=""
-                        yAxisInterval={1}
-                        chartConfig={{
+                            }}
+                            width={Math.max(values.length * 70, Dimensions.get('window').width - 70)}
+                            height={450}
+                            yAxisLabel="$"
+                            yAxisSuffix=""
+                            yAxisInterval={1}
+                            chartConfig={{
                             backgroundColor: "#000e21",
                             backgroundGradientFrom: "#fb8c00",
                             backgroundGradientTo: "#ffa726",
@@ -106,15 +107,15 @@ export default function VistaTipoIndicador() {
                                 strokeWidth: "2",
                                 stroke: "#ffa726"
                             }
-                        }}
-                        bezier
-                        style={{
+                            }}
+                            bezier
+                            style={{
                             marginVertical: 8,
                             borderRadius: 16
-                        }}
-                    />
+                            }}
+                        />
+                    </View>
                 </ScrollView>
-                
             </View>
         );
     };
@@ -124,8 +125,8 @@ export default function VistaTipoIndicador() {
         headerBackgroundColor={{ light: '#3d3f58', dark: '#353636' }}
         headerImage={
             <View style={styles.imageContainer}>
-                <Icon name="bitcoin" size={200} color="white" style={styles.icon} />
-                <Icon name="usd" size={200} color="white" style={styles.icon} />
+                <Icon name="bitcoin" size={150} color="white" style={styles.icon} />
+                <Icon name="usd" size={150} color="white" style={styles.icon} />
             </View>
         }>
         <ThemedView style={styles.titleContainer}>
@@ -233,6 +234,7 @@ const styles = StyleSheet.create({
         fontFamily: 'monospace',
     },
     icon: {
+        marginTop: 30,
         marginHorizontal: 25,
     },
     

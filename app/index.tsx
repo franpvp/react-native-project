@@ -140,11 +140,9 @@ const PerfilStackScreen = () => (
 
 const TabNavigator = ({navigation}: any) => {
     const colorScheme = useColorScheme();
-
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', async () => {
         });
-
         return unsubscribe;
     }, [navigation]);
     
@@ -184,7 +182,6 @@ const TabNavigator = ({navigation}: any) => {
             ),
             }} 
         />
-        
         <Tab.Screen 
             name="PerfilTab" 
             component={PerfilStackScreen}

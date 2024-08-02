@@ -34,7 +34,7 @@ export default function VistaAñoTipoIndicador() {
         })
 
         try {
-            const response = await fetch(`http://10.200.82.184:8080/api/consultar-tipo-año/${tipoIndicador}/${anio}`);
+            const response = await fetch(`http://192.168.1.85:8080/api/consultar-tipo-año/${tipoIndicador}/${anio}`);
             if (!response.ok) {
                 analytics.logEvent('screen_view', {
                     firebase_screen: nombreVistaActual,
@@ -68,8 +68,13 @@ const handleApi = async () => {
 
     return (
     <ParallaxScrollView
-        headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
-        headerImage={<Ionicons size={250} name="code-slash" style={styles.headerImage} />}>
+        headerBackgroundColor={{ light: '#3d3f58', dark: '#353636' }}
+        headerImage={
+            <View style={styles.headerContainer}>
+                <Ionicons size={250} name="calendar" style={styles.headerImage} />
+                <Text style={styles.headerText}>YYYY</Text>
+            </View>
+        }>
         <ThemedView style={styles.titleContainer}>
             <ThemedText type="title">Consultar Indicadores</ThemedText>
         </ThemedView>
@@ -116,10 +121,24 @@ const handleApi = async () => {
 }
 
 const styles = StyleSheet.create({
+    headerContainer: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        position: 'relative',
+    },
+    headerText: {
+        color: 'white',
+        fontSize: 40,
+        fontWeight: 'bold',
+        textAlign: 'center',
+        alignItems: 'center',
+        marginTop: 170,
+        marginLeft: 250
+    },
     headerImage: {
-        color: '#808080',
-        bottom: -30,
-        left: -10,
+        color: 'white',
+        top: -15,
+        left: 25,
         position: 'absolute',
     },
     container: {

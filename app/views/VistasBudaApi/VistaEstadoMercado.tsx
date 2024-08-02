@@ -34,7 +34,7 @@ const VistaEstadoMercado = () => {
                 marketId: marketId
             });
             // Consulta a servicio Java Springboot
-            const response = await fetch(`http://10.200.82.184:8080/api/consultar-mercado/${marketId}`);
+            const response = await fetch(`http://192.168.1.85:8080/api/consultar-mercado/${marketId}`);
             if (!response.ok) {
                 throw new Error('No hay respuesta de API');
             }
