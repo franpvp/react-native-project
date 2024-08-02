@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import 'react-native-gesture-handler';
-import { NativeBaseProvider, extendTheme } from 'native-base';
+import { Avatar, NativeBaseProvider, extendTheme } from 'native-base';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { useColorScheme, StyleSheet, LogBox } from 'react-native';
 import { Colors } from '@/constants/Colors';
@@ -21,12 +21,14 @@ import Login from '@/app/views/VistasAuth/Login';
 import Registro from '@/app/views/VistasAuth/Registro';
 import Contacto from './views/VistaContacto/Contacto';
 
-import { authFirebase, analyticsFirebase } from '@/database/firebase';
+import { db, authFirebase, analyticsFirebase } from '@/database/firebase';
 import VistaIndicadores from './views/VistasIndicadoresApi/VistaIndicadores';
 import VistaTipoIndicador from './views/VistasIndicadoresApi/VistaTipoIndicador';
 import VistaFechaTipoIndicador from './views/VistasIndicadoresApi/VistaFechaTipoIndicador';
 import VistaAnioTipoIndicador from './views/VistasIndicadoresApi/VistaAñoTipoIndicador';
 import RestablecerPassword from './views/VistasAuth/RestablecerPassword';
+import { User, onAuthStateChanged } from 'firebase/auth';
+
 
 const Stack = createStackNavigator();
 const HomeStack = createStackNavigator();
@@ -37,24 +39,55 @@ const ContactStack = createStackNavigator();
 const auth = authFirebase;
 const analytics = analyticsFirebase;
 
+const fetchPhotoURL = async (uid: string): Promise<string | null> => {
+    try {
+        const doc = await db.collection('usuarios').doc(uid).get();
+        if (doc.exists) {
+            return doc.data()?.photoURL || null;
+        } else {
+            console.log("No matching documents found.");
+            return null;
+        }
+    } catch (error: any) {
+        console.error("Error fetching photoURL ", error.message);
+        return null;
+    }
+};
 
-const HomeStackScreen = () => (
+const HomeStackScreen = ({ photoURL }: { photoURL: string | null }) => (
     <HomeStack.Navigator
-        screenOptions={() => ({
-            headerStyle: {
-                backgroundColor: '#3d3f58',
-                height: 140,
-                borderWidth: 0,
-                elevation: 0,
-                shadowOpacity: 0,
-
-            },
-            headerTintColor: '#fff', // Color del texto del encabezado
-            headerTitleStyle: {
-                fontWeight: 'bold',
-                fontSize: 22,
-            },
-            headerTitleAlign: 'center',
+        screenOptions={({ route }) => ({
+        headerStyle: {
+            backgroundColor: '#3d3f58',
+            height: 140,
+            borderWidth: 0,
+            elevation: 0,
+            shadowOpacity: 0,
+        },
+        headerRight: () => {
+            // Solo mostrar el avatar en la pantalla "Home"
+            if (route.name === 'Home') {
+            return (
+                <TouchableOpacity onPress={() => console.log('Avatar clicked!')}>
+                <Avatar
+                    bg="gray.200"
+                    size="65px"
+                    mr="20px"
+                    shadow={2}
+                    borderColor='#cbd5e1'
+                    source={{ uri: photoURL || 'https://via.placeholder.com/200' }}
+                />
+                </TouchableOpacity>
+            );
+            }
+            return null; // No mostrar el avatar en otras pantallas
+        },
+        headerTintColor: '#fff',
+        headerTitleStyle: {
+            fontWeight: 'bold',
+            fontSize: 22,
+        },
+        headerTitleAlign: 'center',
         })}
     >
         <HomeStack.Screen name="Home" component={VistaHome} />
@@ -67,8 +100,9 @@ const HomeStackScreen = () => (
         <HomeStack.Screen name="Año Tipo Indicador" component={VistaAnioTipoIndicador} />
         <HomeStack.Screen name="Contacto" component={Contacto} />
         <HomeStack.Screen name="Restablecer" component={RestablecerPassword} />
-    </HomeStack.Navigator>
-);
+        </HomeStack.Navigator>
+    );
+
 
 const ContactStackScreen = () => (
     <ContactStack.Navigator
@@ -138,13 +172,24 @@ const PerfilStackScreen = () => (
     </PerfilStack.Navigator>
 );
 
-const TabNavigator = ({navigation}: any) => {
+const TabNavigator = () => {
     const colorScheme = useColorScheme();
+    const [photoURL, setPhotoURL] = useState<string | null>(null);
+    const [user, setUser] = useState<FirebaseAuthTypes.User | null>(null);
+
     useEffect(() => {
-        const unsubscribe = navigation.addListener('focus', async () => {
+        const unsubscribe = auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                setUser(user);
+                const url = await fetchPhotoURL(user.uid);
+                setPhotoURL(url);
+            } else {
+                setUser(null);
+                setPhotoURL(null);
+            }
         });
-        return unsubscribe;
-    }, [navigation]);
+        return () => unsubscribe();
+    }, []);
     
     return (
     <Tab.Navigator
@@ -161,7 +206,7 @@ const TabNavigator = ({navigation}: any) => {
     >
         <Tab.Screen 
             name="HomeTab" 
-            component={HomeStackScreen} 
+            children={() => <HomeStackScreen photoURL={photoURL} />}
             options={{
             tabBarShowLabel: false,
             tabBarIcon: ({ color, focused }) => (
@@ -196,19 +241,23 @@ const TabNavigator = ({navigation}: any) => {
     );
 };
 
-
 export default function App() {
 
     const [user, setUser] = useState<FirebaseAuthTypes.User | null>(null);
+    const [photoURL, setPhotoURL] = useState<string | null>(null);
 
     useEffect(() => {
-        const unsubscribe = authFirebase.onAuthStateChanged((user) => {
-            console.log('user ', user); // Verifica si el usuario está siendo detectado aquí
-            setUser(user);
+        const unsubscribe = auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                setUser(user);
+                const url = await fetchPhotoURL(user.uid);
+                setPhotoURL(url);
+            } else {
+                setUser(null);
+                setPhotoURL(null);
+            }
         });
-    
-        // Limpia el suscriptor cuando el componente se desmonta
-        return unsubscribe;
+        return () => unsubscribe();
     }, []);
 
     useEffect(() => {

@@ -34,7 +34,7 @@ export default function Perfil({ navigation }) {
       });
   } else {
     console.log('User not authenticated');
-  }
+  };
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {

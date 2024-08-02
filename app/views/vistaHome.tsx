@@ -1,28 +1,26 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { VStack, Center, Box, Text } from "native-base";
 import { View, Image, StyleSheet, Button, Pressable} from 'react-native';
 import { ScrollView } from "react-native";
 import { createStackNavigator } from '@react-navigation/stack';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { HeaderBackButton } from '@react-navigation/elements';
-import { analyticsFirebase } from "@/database/firebase"; 
+import { db, analyticsFirebase, authFirebase } from "@/database/firebase"; 
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 export default function VistaHome({ navigation }: any) {
-
-  const analytics = analyticsFirebase;
   
-  const logTestEvent = async () => {
-    await analytics.logEvent('test_event', {
-      test_param: 'test_value',
-    });
-    console.log('Test event logged');
-  };
+  // const logTestEvent = async () => {
+  //   await analytics.logEvent('test_event', {
+  //     test_param: 'test_value',
+  //   });
+  //   console.log('Test event logged');
+  // };
 
   return (
     <View style={styles.container}>
-        <ScrollView showsHorizontalScrollIndicator={false}>
+      <ScrollView showsHorizontalScrollIndicator={false}>
         {/* Contenido Endpoint Indicadores económicos */}
         <VStack alignItems="center" paddingBottom={5}>
           <Box style={styles.containerIndBox}>
@@ -72,7 +70,6 @@ export default function VistaHome({ navigation }: any) {
               </ScrollView>
             </Box>
           </Box>
-              
         </VStack>
         {/* Contenido Endpoints Buda API */}
         <VStack alignItems="center" paddingBottom={5}>
