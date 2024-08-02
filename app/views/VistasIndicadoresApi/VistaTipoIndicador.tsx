@@ -74,10 +74,10 @@ export default function VistaTipoIndicador() {
         const labels = chartData.map((item: { date: { toLocaleDateString: () => any; }; }) => item.date.toLocaleDateString());
 
         return (
-            <View>
-                <Text>Gráfica {data.nombre}</Text>
+            <View style={styles.container}>
+                <Text style={styles.title}>{data.nombre}</Text>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                    <View style={{ width: Math.max(values.length * 70, Dimensions.get('window').width - 70) }}>
+                    <View style={{ width: Math.max(values.length * 70, Dimensions.get('window').width) }}>
                         <LineChart
                             data={{
                             labels: labels,
@@ -87,18 +87,18 @@ export default function VistaTipoIndicador() {
                                 }
                             ]
                             }}
-                            width={Math.max(values.length * 70, Dimensions.get('window').width - 70)}
-                            height={450}
+                            width={Math.max(values.length * 70, Dimensions.get('window').width)}
+                            height={350}
                             yAxisLabel="$"
                             yAxisSuffix=""
                             yAxisInterval={1}
                             chartConfig={{
-                            backgroundColor: "#000e21",
-                            backgroundGradientFrom: "#fb8c00",
-                            backgroundGradientTo: "#ffa726",
-                            decimalPlaces: 0,
-                            color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-                            labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+                                backgroundColor: "#292524",
+                                backgroundGradientFrom: "#292524",
+                                backgroundGradientTo: "#292524",
+                                decimalPlaces: 0,
+                                color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+                                labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
                             style: {
                                 borderRadius: 16,
                             },
@@ -110,8 +110,8 @@ export default function VistaTipoIndicador() {
                             }}
                             bezier
                             style={{
-                            marginVertical: 8,
-                            borderRadius: 16
+                                marginVertical: 8,
+                                borderRadius: 10
                             }}
                         />
                     </View>
@@ -175,11 +175,16 @@ const styles = StyleSheet.create({
         position: 'absolute',
     },
     container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        paddingTop: 50,
-        backgroundColor: 'white',
+        padding: 16,
+        backgroundColor: '#292524',
+        borderRadius: 10,
+    },
+    title: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: 'white',
+        textAlign: 'center',
+        marginBottom: 16,
     },
     cell: {
         flex: 1,
