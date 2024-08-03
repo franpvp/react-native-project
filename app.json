@@ -45,6 +45,15 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "027ac418-49da-4dd3-8d9d-12b1694cbf27"
+      }
+    },
+    "owner": "fran98"
   }
 }
