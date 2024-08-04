@@ -79,8 +79,8 @@ export default function VistaHome({ navigation }: any) {
     
       return (
         <Box key={indicator.codigo} style={styles.indicatorBox}>
-          <Text fontSize="22px" color="white" fontWeight={900}>{indicator.nombre}</Text>
-          <Text fontSize="22px" color="white">
+          <Text fontSize="16px" color="white" fontWeight={800}>{indicator.nombre}</Text>
+          <Text fontSize="16px" color="white">
             {formateoValor(indicator.valor, unidadFormateada)} {unidadFormateada}
           </Text>
         </Box>
@@ -210,12 +210,12 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     alignItems: "center",
     justifyContent: "center",
-    padding: 20,
-    margin: 15,
+    padding: 10,
+    margin: 20,
     marginLeft: 15,
     marginRight: 2,
     backgroundColor: "#292524",
-    opacity: .9,
+    opacity: .8,
     borderRadius: 5,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
@@ -250,7 +250,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     alignItems: "center",
     justifyContent: "center",
-    padding: 20,
+    padding: 15,
     paddingLeft: 40,
     paddingRight: 40,
     marginTop: 20,
@@ -268,7 +268,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     alignItems: "center",
     justifyContent: "center",
-    padding: 20,
+    padding: 15,
     paddingLeft: 40,
     paddingRight: 40,
     marginTop: 20,
@@ -287,7 +287,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     alignItems: "center",
     justifyContent: "center",
-    padding: 20,
+    padding: 15,
     paddingLeft: 40,
     paddingRight: 40,
     marginTop: 20,
@@ -304,7 +304,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     alignItems: "center",
     justifyContent: "center",
-    padding: 20,
+    padding: 15,
     paddingLeft: 40,
     paddingRight: 40,
     marginTop: 20,

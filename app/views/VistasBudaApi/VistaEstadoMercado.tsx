@@ -115,7 +115,7 @@ const VistaEstadoMercado = () => {
             <ThemedView style={styles.titleContainer}>
                 <ThemedText type="title">Consulta Estado Mercado</ThemedText>
             </ThemedView>
-            <Text style={styles.desc}>Estado actual de un determinado mercado. Se entregan las mejores ofertas de compra y venta (bid y ask), asi como el precio de la ultima transacción (last_price) para el mercado solicitado.</Text>
+            <Text style={styles.desc}>Estado actual de un determinado mercado. Se entregan las mejores ofertas de compra y venta, asi como el precio de la ultima transacción para el mercado solicitado.</Text>
             <ThemedView>
                 <TextInput
                     value={marketId}

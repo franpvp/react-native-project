@@ -103,14 +103,13 @@ export default function VistaAbonoRetiro() {
       </ThemedView>
       <ThemedText>Entrega los costos asociados a realizar un abono o retiro en la moneda seleccionada.</ThemedText>
       <ThemedView>
-        <Input 
-            size="lg" 
-            variant="outline" 
-            placeholder="Ingrese consulta" 
-            mt={3}
-            value={currency}
-            onChangeText={setCurrency}
-        />
+        <TextInput
+          value={currency}
+          onChangeText={setCurrency}
+          placeholder="Ingrese consulta"
+          autoCapitalize='none'
+          style={styles.input}
+        ></TextInput>
       </ThemedView>
       <ThemedView>
           <Center>
@@ -119,7 +118,6 @@ export default function VistaAbonoRetiro() {
                   variant="solid" 
                   w="80%" 
                   borderRadius={40}
-                  marginTop={5}
                   onPress={() => typeSelected('deposit')}>
                       Deposito
               </Button>
@@ -132,7 +130,8 @@ export default function VistaAbonoRetiro() {
                   variant="solid" 
                   w="80%" 
                   borderRadius={40}
-                  marginTop={2}
+                  marginTop={1}
+                  marginBottom={20}
                   onPress={() => typeSelected('withdrawal')}>
                       Retiro
               </Button>
@@ -195,12 +194,17 @@ const styles = StyleSheet.create({
       borderRadius: 10,
   },
   input: {
-      height: 40,
-      borderColor: 'gray',
-      borderWidth: 1,
-      marginBottom: 16,
-      paddingHorizontal: 8,
-  },
+    height: 45,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    borderWidth: 0.5,
+    paddingHorizontal: 20,
+    marginTop: 10,
+    marginBottom: 12,
+    fontSize: 16,
+    color: 'black',
+    width: '100%',
+},
   jsonContainer: {
       margin: 16,
       padding: 16,

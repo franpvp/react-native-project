@@ -98,6 +98,7 @@ const handleApi = async () => {
                 w="80%" 
                 borderRadius={40}
                 marginTop={1}
+                marginBottom={20}
                 onPress={handleApi}>
                 Buscar
             </Button>

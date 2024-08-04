@@ -72,10 +72,10 @@ const HomeStackScreen = ({ photoURL }: { photoURL: string | null }) => (
                     <TouchableOpacity onPress={() => navigation.navigate("PerfilTab")}>
                         <Avatar
                             bg="gray.200"
-                            size="65px"
+                            size="60px"
                             ml="15px"
                             mt="10px"
-                            shadow={2}
+                            shadow={1}
                             borderColor='#cbd5e1'
                             source={{ uri: photoURL || 'https://via.placeholder.com/200' }}
                         />

@@ -124,8 +124,8 @@ export default function Perfil({ navigation }) {
 
 
   return (
-    <ScrollView showsHorizontalScrollIndicator={false}>
-      <VStack alignItems="center" paddingBottom={10}>
+    <ScrollView showsVerticalScrollIndicator={false}>
+      <VStack alignItems="center" paddingBottom={10} >
         {userAuth ? (
           <>
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -198,7 +198,8 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     width: '80%',
-    alignItems: 'center'
+    alignItems: 'center',
+    marginBottom: 80
   },
   label: {
     fontSize: 16,

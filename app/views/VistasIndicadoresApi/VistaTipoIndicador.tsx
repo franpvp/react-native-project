@@ -77,7 +77,7 @@ export default function VistaTipoIndicador() {
             <View style={styles.container}>
                 <Text style={styles.title}>{data.nombre}</Text>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                    <View style={{ width: Math.max(values.length * 70, Dimensions.get('window').width) }}>
+                    <View style={{ width: Math.max(values.length * 80, Dimensions.get('window').width) }}>
                         <LineChart
                             data={{
                             labels: labels,
@@ -87,7 +87,7 @@ export default function VistaTipoIndicador() {
                                 }
                             ]
                             }}
-                            width={Math.max(values.length * 70, Dimensions.get('window').width)}
+                            width={Math.max(values.length * 80, Dimensions.get('window').width)}
                             height={350}
                             yAxisLabel="$"
                             yAxisSuffix=""
@@ -100,17 +100,17 @@ export default function VistaTipoIndicador() {
                                 color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
                                 labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
                             style: {
-                                borderRadius: 16,
+                                borderRadius: 12,
                             },
                             propsForDots: {
-                                r: "6",
-                                strokeWidth: "2",
+                                r: "4",
+                                strokeWidth: "1",
                                 stroke: "#ffa726"
                             }
                             }}
                             bezier
                             style={{
-                                marginVertical: 8,
+                                marginVertical: 5,
                                 borderRadius: 10
                             }}
                         />
